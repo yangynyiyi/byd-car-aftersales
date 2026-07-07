@@ -1,0 +1,16 @@
+target/
+*.class
+*.jar
+*.war
+
+.idea/
+*.iml
+.vscode/
+
+.DS_Store
+Thumbs.db
+
+*.log
+
+# 敏感配置
+application-local.yml

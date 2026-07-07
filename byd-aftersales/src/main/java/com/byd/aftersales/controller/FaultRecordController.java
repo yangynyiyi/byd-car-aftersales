@@ -1,0 +1,60 @@
+package com.byd.aftersales.controller;
+
+import com.byd.aftersales.common.ApiResponse;
+import com.byd.aftersales.domain.FaultRecord;
+import com.byd.aftersales.service.FaultRecordService;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/fault-records")
+public class FaultRecordController {
+
+    private final FaultRecordService faultRecordService;
+
+    public FaultRecordController(FaultRecordService faultRecordService) {
+        this.faultRecordService = faultRecordService;
+    }
+
+    @PostMapping
+    public ApiResponse<Void> create(@RequestBody FaultRecord record) {
+        faultRecordService.create(record);
+        return ApiResponse.ok();
+    }
+
+    @PutMapping("/{faultNo}/status")
+    public ApiResponse<Void> updateStatus(@PathVariable String faultNo, @RequestParam String status) {
+        faultRecordService.updateStatus(faultNo, status);
+        return ApiResponse.ok();
+    }
+
+    @DeleteMapping("/{faultNo}")
+    public ApiResponse<Void> delete(@PathVariable String faultNo) {
+        faultRecordService.delete(faultNo);
+        return ApiResponse.ok();
+    }
+
+    @GetMapping("/{faultNo}")
+    public ApiResponse<FaultRecord> findByNo(@PathVariable String faultNo) {
+        return ApiResponse.ok(faultRecordService.findByNo(faultNo));
+    }
+
+    @GetMapping("/vehicle/{vin}")
+    public ApiResponse<List<FaultRecord>> findByVin(@PathVariable String vin) {
+        return ApiResponse.ok(faultRecordService.findByVin(vin));
+    }
+
+    @GetMapping
+    public ApiResponse<List<FaultRecord>> findAll() {
+        return ApiResponse.ok(faultRecordService.findAll());
+    }
+}

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9e085db6-f7a8-425a-aa9f-2bc12518e51b" name="Changes" comment="3demo">
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/BydAftersalesApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/BydAftersalesApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/common/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/common/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/resources/db/schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/resources/db/schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/db/schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/db/schema.sql" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;yangynyiyi&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/yangynyiyi/byd-car-aftersales.git&quot;,
+    &quot;accountId&quot;: &quot;b74b7be9-1385-4dc7-a241-e8ff918ef2b2&quot;
+  }
+}</component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="customMavenHome" value="$PROJECT_DIR$/../../../../homework/2026/apache-maven-3.5.0-bin/apache-maven-3.5.0" />
+        <option name="localRepository" value="D:\yyn\homework\2026\apache-maven-3.5.0-bin\apache-maven-3.5.0\localRepository" />
+        <option name="mavenHomeTypeForPersistence" value="CUSTOM" />
+        <option name="userSettingsFile" value="C:\Users\28456\.m2\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="3G9mxgneYiFudVBMsmAYdkh26Qw" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/yyn/2026/car/code/byd-car-aftersales&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\yyn\2026\car\code\byd-car-aftersales" />
+      <recent name="D:\yyn\2026\car\code\byd-car-aftersales\3core" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="BydCarApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="byd-car-aftersales" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.byd.car.BydCarApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9e085db6-f7a8-425a-aa9f-2bc12518e51b" name="Changes" comment="" />
+      <created>1783392410314</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1783392410314</updated>
+      <workItem from="1783392412180" duration="2295000" />
+      <workItem from="1783403837740" duration="134000" />
+    </task>
+    <task id="LOCAL-00001" summary="3demo">
+      <option name="closed" value="true" />
+      <created>1783407524641</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1783407524641</updated>
+    </task>
+    <task id="LOCAL-00002" summary="3demo">
+      <option name="closed" value="true" />
+      <created>1783408745375</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1783408745375</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="3demo" />
+    <option name="LAST_COMMIT_MESSAGE" value="3demo" />
+  </component>
+</project>

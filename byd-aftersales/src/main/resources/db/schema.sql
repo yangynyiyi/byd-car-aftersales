@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS work_order (
     work_order_no VARCHAR(32) NOT NULL,
     fault_id BIGINT NOT NULL,
     diagnosis_id BIGINT,
-    technician_id BIGINT NOT NULL,
+    technician_id BIGINT,
     status VARCHAR(30) NOT NULL DEFAULT 'CREATED',
     labor_cost DECIMAL(10,2) NOT NULL DEFAULT 0,
     repair_result TEXT,

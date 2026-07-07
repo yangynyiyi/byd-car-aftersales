@@ -22,6 +22,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -117,7 +118,7 @@ public class WorkOrderCompletionService {
         // ── 事务提交后：写 Redis 预警 + 写 MongoDB 日志 ──────────────
         final BigDecimal finalPartAmount = partAmount;
         final BigDecimal finalTotal = totalAmount;
-        final List<PartUsage> usagesSnapshot = List.copyOf(approvedUsages);
+        final List<PartUsage> usagesSnapshot = new ArrayList<>(approvedUsages);
         final Long finalSettlementId = settlementId;
 
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {

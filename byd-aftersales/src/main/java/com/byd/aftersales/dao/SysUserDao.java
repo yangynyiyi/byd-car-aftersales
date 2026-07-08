@@ -53,6 +53,12 @@ public class SysUserDao extends BaseJdbcDao {
         return jdbc().update("UPDATE sys_user SET deleted = 1 WHERE user_id = ?", userId);
     }
 
+    public int resetPassword(Long userId, String password) {
+        return jdbc().update(
+                "UPDATE sys_user SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ? AND deleted = 0",
+                password, userId);
+    }
+
     public Optional<SysUser> findById(Long userId) {
         List<SysUser> users = jdbc().query("SELECT * FROM sys_user WHERE user_id = ? AND deleted = 0",
                 rowMapper, userId);

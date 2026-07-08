@@ -2,3 +2,6 @@
 *.iml
 target/
 *.class
+*.log
+dump.rdb
+*.docx

@@ -6,7 +6,7 @@ VALUES
 ('advisor001', '12345678', 'Li Advisor', '13800000002', 'ADVISOR', 'ENABLED'),
 ('tech001', '12345678', 'Wang Technician', '13800000003', 'TECHNICIAN', 'ENABLED'),
 ('part001', '12345678', 'Chen Parts', '13800000004', 'PART_ADMIN', 'ENABLED'),
-('manager001', '12345678', 'Zhao Manager', '13800000005', 'MANAGER', 'ENABLED'),
+('manager001', '12345678', 'Zhao Manager', '13800000005', 'SERVICE_MANAGER', 'ENABLED'),
 ('admin001', '12345678', 'System Admin', '13800000006', 'ADMIN', 'ENABLED')
 ON DUPLICATE KEY UPDATE
     password = VALUES(password),
@@ -18,13 +18,37 @@ ON DUPLICATE KEY UPDATE
 INSERT INTO service_center (center_name, city, address, phone, status)
 VALUES ('BYD Shenzhen After-Sales Center', 'Shenzhen', 'No. 1 Demo Road', '0755-88888888', 'OPEN');
 
-INSERT INTO vehicle (vin, owner_id, license_plate, model, battery_model, purchase_date, current_mileage, vehicle_status)
-VALUES ('LC0CE4DB7N0000001', 1, 'YueB12345', 'Han EV', 'Blade Battery A1', '2024-05-01', 18320.5, 'NORMAL')
-ON DUPLICATE KEY UPDATE updated_at = CURRENT_TIMESTAMP;
+INSERT INTO vehicle
+    (vin, owner_id, license_plate, model, battery_model, purchase_date,
+     last_maintenance_date, next_maintenance_date, next_inspection_date, insurance_expire_date,
+     current_mileage, vehicle_status)
+VALUES
+    ('LC0CE4DB7N0000001', 1, 'YueB12345', 'Han EV', 'Blade Battery A1', '2024-05-01',
+     DATE_SUB(CURDATE(), INTERVAL 5 MONTH), DATE_ADD(CURDATE(), INTERVAL 10 DAY),
+     DATE_ADD(CURDATE(), INTERVAL 25 DAY), DATE_ADD(CURDATE(), INTERVAL 40 DAY),
+     18320.5, 'NORMAL')
+ON DUPLICATE KEY UPDATE
+    last_maintenance_date = VALUES(last_maintenance_date),
+    next_maintenance_date = VALUES(next_maintenance_date),
+    next_inspection_date = VALUES(next_inspection_date),
+    insurance_expire_date = VALUES(insurance_expire_date),
+    updated_at = CURRENT_TIMESTAMP;
 
-INSERT INTO appointment (appointment_no, vin, owner_id, center_id, appointment_time, problem_description, status)
-SELECT 'APT20250707001', 'LC0CE4DB7N0000001', 1, 1, '2025-07-08 10:00:00', '定期保养与电池检测', 'PENDING'
+INSERT INTO appointment (appointment_no, vin, owner_id, center_id, appointment_time, service_type, problem_description, status)
+SELECT 'APT20250707001', 'LC0CE4DB7N0000001', 1, 1, '2025-07-08 10:00:00', 'SCHEDULED_MAINTENANCE', '定期保养与电池检测', 'PENDING'
 WHERE NOT EXISTS (SELECT 1 FROM appointment WHERE appointment_no = 'APT20250707001');
+
+INSERT INTO appointment (appointment_no, vin, owner_id, center_id, appointment_time, service_type, problem_description, status)
+SELECT 'APT20250707002', 'LC0CE4DB7N0000001', 1, 1, '2025-07-09 14:00:00', 'ANNUAL_INSPECTION', '车辆年检代办，需协助检查资料和车辆状态', 'CONFIRMED'
+WHERE NOT EXISTS (SELECT 1 FROM appointment WHERE appointment_no = 'APT20250707002');
+
+INSERT INTO appointment (appointment_no, vin, owner_id, center_id, appointment_time, service_type, problem_description, status)
+SELECT 'APT20250707003', 'LC0CE4DB7N0000001', 1, 1, '2025-07-10 09:30:00', 'FAULT_REPAIR', '仪表报警，车辆充电缓慢，需故障诊断', 'ARRIVED'
+WHERE NOT EXISTS (SELECT 1 FROM appointment WHERE appointment_no = 'APT20250707003');
+
+INSERT INTO appointment (appointment_no, vin, owner_id, center_id, appointment_time, service_type, problem_description, status)
+SELECT 'APT20250707004', 'LC0CE4DB7N0000001', 1, 1, '2025-07-08 16:00:00', 'EMERGENCY_RESCUE', '突发状况：车辆无法正常行驶，需要道路救援或拖车进店', 'PENDING'
+WHERE NOT EXISTS (SELECT 1 FROM appointment WHERE appointment_no = 'APT20250707004');
 
 INSERT INTO fault_record (fault_no, appointment_id, vin, owner_id, advisor_id, fault_description, fault_level, status)
 SELECT 'FLT20250707001', 1, 'LC0CE4DB7N0000001', 1, 2, '车辆充电缓慢，续航明显下降', 'HIGH', 'REGISTERED'

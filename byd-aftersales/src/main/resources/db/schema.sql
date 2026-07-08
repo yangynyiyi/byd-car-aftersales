@@ -39,6 +39,10 @@ CREATE TABLE IF NOT EXISTS vehicle (
     model VARCHAR(50) NOT NULL,
     battery_model VARCHAR(50) NOT NULL,
     purchase_date DATE,
+    last_maintenance_date DATE,
+    next_maintenance_date DATE,
+    next_inspection_date DATE,
+    insurance_expire_date DATE,
     current_mileage DECIMAL(10,1) NOT NULL DEFAULT 0,
     vehicle_status VARCHAR(20) NOT NULL DEFAULT 'NORMAL',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -46,6 +50,28 @@ CREATE TABLE IF NOT EXISTS vehicle (
     deleted TINYINT NOT NULL DEFAULT 0,
     KEY idx_vehicle_owner_id (owner_id),
     CONSTRAINT fk_vehicle_owner FOREIGN KEY (owner_id) REFERENCES sys_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 车辆提醒表：统一承载保养、年检、电池、结算和维修进度等面向车主的提醒。
+CREATE TABLE IF NOT EXISTS vehicle_reminder (
+    reminder_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    reminder_no VARCHAR(32) NOT NULL,
+    vin CHAR(17) NOT NULL,
+    owner_id BIGINT NOT NULL,
+    reminder_type VARCHAR(30) NOT NULL,
+    level VARCHAR(20) NOT NULL DEFAULT 'INFO',
+    title VARCHAR(100) NOT NULL,
+    content TEXT,
+    due_time DATETIME,
+    status VARCHAR(20) NOT NULL DEFAULT 'UNREAD',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT NOT NULL DEFAULT 0,
+    UNIQUE KEY uk_vehicle_reminder_no (reminder_no),
+    KEY idx_vehicle_reminder_owner_status (owner_id, status),
+    KEY idx_vehicle_reminder_vin (vin),
+    CONSTRAINT fk_vehicle_reminder_vehicle FOREIGN KEY (vin) REFERENCES vehicle (vin),
+    CONSTRAINT fk_vehicle_reminder_owner FOREIGN KEY (owner_id) REFERENCES sys_user (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 预约表：记录车主提交的保养或维修预约。
@@ -56,6 +82,7 @@ CREATE TABLE IF NOT EXISTS appointment (
     owner_id BIGINT NOT NULL,
     center_id BIGINT NOT NULL,
     appointment_time DATETIME NOT NULL,
+    service_type VARCHAR(30) NOT NULL DEFAULT 'FAULT_REPAIR',
     problem_description TEXT NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -65,6 +92,7 @@ CREATE TABLE IF NOT EXISTS appointment (
     KEY idx_appointment_vin (vin),
     KEY idx_appointment_owner_id (owner_id),
     KEY idx_appointment_center_id (center_id),
+    KEY idx_appointment_service_type (service_type),
     CONSTRAINT fk_appointment_vehicle FOREIGN KEY (vin) REFERENCES vehicle (vin),
     CONSTRAINT fk_appointment_owner FOREIGN KEY (owner_id) REFERENCES sys_user (user_id),
     CONSTRAINT fk_appointment_center FOREIGN KEY (center_id) REFERENCES service_center (center_id)

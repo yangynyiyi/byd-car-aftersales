@@ -19,6 +19,7 @@ public class AppointmentDao extends BaseJdbcDao {
         appointment.setOwnerId(rs.getLong("owner_id"));
         appointment.setCenterId(rs.getLong("center_id"));
         appointment.setAppointmentTime(rs.getTimestamp("appointment_time").toLocalDateTime());
+        appointment.setServiceType(rs.getString("service_type"));
         appointment.setProblemDescription(rs.getString("problem_description"));
         appointment.setStatus(rs.getString("status"));
         appointment.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
@@ -34,12 +35,12 @@ public class AppointmentDao extends BaseJdbcDao {
     public int insert(Appointment appointment) {
         String sql = """
                 INSERT INTO appointment
-                (appointment_no, vin, owner_id, center_id, appointment_time, problem_description, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                (appointment_no, vin, owner_id, center_id, appointment_time, service_type, problem_description, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         return jdbc().update(sql, appointment.getAppointmentNo(), appointment.getVin(), appointment.getOwnerId(),
-                appointment.getCenterId(), appointment.getAppointmentTime(), appointment.getProblemDescription(),
-                appointment.getStatus());
+                appointment.getCenterId(), appointment.getAppointmentTime(), appointment.getServiceType(),
+                appointment.getProblemDescription(), appointment.getStatus());
     }
 
     public int updateStatus(String appointmentNo, String status) {

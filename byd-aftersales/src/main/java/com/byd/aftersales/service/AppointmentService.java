@@ -19,6 +19,8 @@ import java.util.Set;
 public class AppointmentService {
 
     private static final Set<String> ALLOWED_STATUS = Set.of("PENDING", "CONFIRMED", "CANCELLED", "ARRIVED", "COMPLETED");
+    private static final Set<String> ALLOWED_SERVICE_TYPE = Set.of(
+            "SCHEDULED_MAINTENANCE", "ANNUAL_INSPECTION", "FAULT_REPAIR", "EMERGENCY_RESCUE");
 
     private final AppointmentDao appointmentDao;
     private final VehicleDao vehicleDao;
@@ -41,6 +43,9 @@ public class AppointmentService {
         }
         if (appointment.getStatus() == null || appointment.getStatus().isBlank()) {
             appointment.setStatus("PENDING");
+        }
+        if (appointment.getServiceType() == null || appointment.getServiceType().isBlank()) {
+            appointment.setServiceType("FAULT_REPAIR");
         }
         Vehicle vehicle = vehicleDao.findByVin(appointment.getVin()).orElseThrow(() -> new BusinessException("车辆不存在"));
         fillOwnerId(appointment, vehicle);
@@ -118,6 +123,9 @@ public class AppointmentService {
         }
         if (appointment.getAppointmentTime() == null) {
             throw new BusinessException("预约时间不能为空");
+        }
+        if (!ALLOWED_SERVICE_TYPE.contains(appointment.getServiceType())) {
+            throw new BusinessException("预约服务类型不合法");
         }
         if (appointment.getProblemDescription() == null || appointment.getProblemDescription().isBlank()) {
             throw new BusinessException("问题描述不能为空");

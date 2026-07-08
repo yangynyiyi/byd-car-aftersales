@@ -10,6 +10,7 @@ public class Appointment {
     private Long ownerId;
     private Long centerId;
     private LocalDateTime appointmentTime;
+    private String serviceType;
     private String problemDescription;
     private String status;
     private LocalDateTime createdAt;
@@ -67,6 +68,14 @@ public class Appointment {
 
     public void setAppointmentTime(LocalDateTime appointmentTime) {
         this.appointmentTime = appointmentTime;
+    }
+
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    public void setServiceType(String serviceType) {
+        this.serviceType = serviceType;
     }
 
     public String getProblemDescription() {

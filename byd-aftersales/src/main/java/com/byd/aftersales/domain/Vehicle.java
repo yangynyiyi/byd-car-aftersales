@@ -12,6 +12,10 @@ public class Vehicle {
     private String model;
     private String batteryModel;
     private LocalDate purchaseDate;
+    private LocalDate lastMaintenanceDate;
+    private LocalDate nextMaintenanceDate;
+    private LocalDate nextInspectionDate;
+    private LocalDate insuranceExpireDate;
     private BigDecimal currentMileage;
     private String vehicleStatus;
     private LocalDateTime createdAt;
@@ -64,6 +68,38 @@ public class Vehicle {
 
     public void setPurchaseDate(LocalDate purchaseDate) {
         this.purchaseDate = purchaseDate;
+    }
+
+    public LocalDate getLastMaintenanceDate() {
+        return lastMaintenanceDate;
+    }
+
+    public void setLastMaintenanceDate(LocalDate lastMaintenanceDate) {
+        this.lastMaintenanceDate = lastMaintenanceDate;
+    }
+
+    public LocalDate getNextMaintenanceDate() {
+        return nextMaintenanceDate;
+    }
+
+    public void setNextMaintenanceDate(LocalDate nextMaintenanceDate) {
+        this.nextMaintenanceDate = nextMaintenanceDate;
+    }
+
+    public LocalDate getNextInspectionDate() {
+        return nextInspectionDate;
+    }
+
+    public void setNextInspectionDate(LocalDate nextInspectionDate) {
+        this.nextInspectionDate = nextInspectionDate;
+    }
+
+    public LocalDate getInsuranceExpireDate() {
+        return insuranceExpireDate;
+    }
+
+    public void setInsuranceExpireDate(LocalDate insuranceExpireDate) {
+        this.insuranceExpireDate = insuranceExpireDate;
     }
 
     public BigDecimal getCurrentMileage() {

@@ -5,6 +5,7 @@ import com.byd.aftersales.dao.BatteryHealthDao;
 import com.byd.aftersales.dao.OperationLogDao;
 import com.byd.aftersales.dao.VehicleDao;
 import com.byd.aftersales.domain.BatteryHealthRecord;
+import com.byd.aftersales.domain.Vehicle;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,12 +17,15 @@ public class BatteryHealthService {
     private final BatteryHealthDao batteryHealthDao;
     private final VehicleDao vehicleDao;
     private final OperationLogDao operationLogDao;
+    private final VehicleReminderService reminderService;
 
     public BatteryHealthService(BatteryHealthDao batteryHealthDao, VehicleDao vehicleDao,
-                                OperationLogDao operationLogDao) {
+                                OperationLogDao operationLogDao,
+                                VehicleReminderService reminderService) {
         this.batteryHealthDao = batteryHealthDao;
         this.vehicleDao = vehicleDao;
         this.operationLogDao = operationLogDao;
+        this.reminderService = reminderService;
     }
 
     public BatteryHealthRecord create(BatteryHealthRecord record) {
@@ -57,7 +61,7 @@ public class BatteryHealthService {
         if (operatorId == null) {
             throw new BusinessException("操作人不能为空");
         }
-        vehicleDao.findByVin(vin).orElseThrow(() -> new BusinessException("车辆不存在"));
+        Vehicle vehicle = vehicleDao.findByVin(vin).orElseThrow(() -> new BusinessException("车辆不存在"));
         List<BatteryHealthRecord> records = batteryHealthDao.findByVin(vin);
         if (records.isEmpty()) {
             throw new BusinessException("暂无电池检测记录");
@@ -68,6 +72,7 @@ public class BatteryHealthService {
                 vin, latest.getSoh(), latest.getWarningLevel());
         Long businessId = latest.getBatteryRecordId() != null ? latest.getBatteryRecordId() : 0L;
         operationLogDao.insert("BATTERY", businessId, "REMIND_OWNER", operatorId, detail);
+        reminderService.createBatteryReminder(vin, vehicle.getOwnerId(), latest.getWarningLevel(), detail);
     }
 
     private String resolveWarningLevel(BigDecimal soh) {

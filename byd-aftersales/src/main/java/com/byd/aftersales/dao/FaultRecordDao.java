@@ -52,6 +52,17 @@ public class FaultRecordDao extends BaseJdbcDao {
                 status, faultNo);
     }
 
+    public int update(FaultRecord record) {
+        String sql = """
+                UPDATE fault_record
+                SET vin = ?, owner_id = ?, advisor_id = ?, fault_description = ?,
+                    fault_level = ?, status = ?
+                WHERE fault_no = ? AND deleted = 0
+                """;
+        return jdbc().update(sql, record.getVin(), record.getOwnerId(), record.getAdvisorId(),
+                record.getFaultDescription(), record.getFaultLevel(), record.getStatus(), record.getFaultNo());
+    }
+
     public int softDelete(String faultNo) {
         return jdbc().update("UPDATE fault_record SET deleted = 1 WHERE fault_no = ?", faultNo);
     }

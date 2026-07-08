@@ -37,6 +37,12 @@ public class FaultRecordController {
         return ApiResponse.ok();
     }
 
+    @PutMapping("/{faultNo}")
+    public ApiResponse<Void> update(@PathVariable String faultNo, @RequestBody FaultRecord record) {
+        faultRecordService.update(faultNo, record);
+        return ApiResponse.ok();
+    }
+
     @DeleteMapping("/{faultNo}")
     public ApiResponse<Void> delete(@PathVariable String faultNo) {
         faultRecordService.delete(faultNo);

@@ -96,7 +96,8 @@ public class FaultRecordService {
             record.setOwnerId(vehicle.getOwnerId());
         }
         AuthUser current = AuthContext.get();
-        if (record.getAdvisorId() == null && current != null && "ADVISOR".equals(current.getRole())) {
+        if (record.getAdvisorId() == null && current != null
+                && ("ADVISOR".equals(current.getRole()) || "ADMIN".equals(current.getRole()))) {
             record.setAdvisorId(current.getUserId());
         }
     }

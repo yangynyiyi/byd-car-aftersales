@@ -101,6 +101,12 @@ public class WorkOrderDao extends BaseJdbcDao {
                 workOrderId);
     }
 
+    public int resumeRepair(Long workOrderId) {
+        return jdbc().update(
+                "UPDATE work_order SET status = 'IN_PROGRESS' WHERE work_order_id = ? AND deleted = 0",
+                workOrderId);
+    }
+
     public int markPartWaiting(Long workOrderId) {
         return jdbc().update(
                 "UPDATE work_order SET status = 'PART_WAITING' WHERE work_order_id = ? AND deleted = 0",

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class WorkOrderService {
@@ -76,8 +77,14 @@ public class WorkOrderService {
 
     public WorkOrder startRepair(Long workOrderId) {
         WorkOrder wo = getById(workOrderId);
+        if ("PART_WAITING".equals(wo.getStatus())) {
+            if (workOrderDao.resumeRepair(workOrderId) == 0) {
+                throw new BusinessException("继续维修失败");
+            }
+            return workOrderDao.findById(workOrderId).orElseThrow(() -> new BusinessException("工单不存在"));
+        }
         if (!"ASSIGNED".equals(wo.getStatus())) {
-            throw new BusinessException("只有已指派状态的工单才能开始维修");
+            throw new BusinessException("只有已指派或待备件状态的工单才能开始维修");
         }
         if (workOrderDao.markStarted(workOrderId) == 0) {
             throw new BusinessException("开始维修失败");
@@ -106,5 +113,12 @@ public class WorkOrderService {
         }
         String detail = String.format("督办工单[%s]，当前状态=%s", wo.getWorkOrderNo(), wo.getStatus());
         operationLogDao.insert("WORK_ORDER", workOrderId, "SUPERVISE", operatorId, detail);
+    }
+
+    public List<Map<String, Object>> listSupervisionsForTechnician(Long technicianId) {
+        if (technicianId == null) {
+            throw new BusinessException("技师 ID 不能为空");
+        }
+        return operationLogDao.findWorkOrderSupervisionsForTechnician(technicianId);
     }
 }

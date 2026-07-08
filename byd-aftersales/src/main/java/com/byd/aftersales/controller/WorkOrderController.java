@@ -53,6 +53,11 @@ public class WorkOrderController {
         return ApiResponse.ok(workOrderService.listByTechnician(technicianId));
     }
 
+    @GetMapping("/supervisions")
+    public ApiResponse<List<Map<String, Object>>> listSupervisions(@RequestParam Long technicianId) {
+        return ApiResponse.ok(workOrderService.listSupervisionsForTechnician(technicianId));
+    }
+
     @PutMapping("/{id}/assign")
     public ApiResponse<WorkOrder> assign(@PathVariable Long id, @RequestBody Map<String, Long> body) {
         return ApiResponse.ok(workOrderService.assignTechnician(id, body.get("technicianId")));

@@ -11,8 +11,8 @@ import com.byd.car.settlement.dao.SettlementDao;
 import com.byd.car.settlement.entity.Settlement;
 import com.byd.car.workorder.dao.WorkOrderDao;
 import com.byd.car.workorder.entity.WorkOrder;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +40,6 @@ import java.util.UUID;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class WorkOrderCompletionService {
 
     private static final String LOW_STOCK_KEY_PREFIX = "part:low_stock:";
@@ -50,7 +49,19 @@ public class WorkOrderCompletionService {
     private final PartUsageDao partUsageDao;
     private final SettlementDao settlementDao;
     private final StringRedisTemplate redisTemplate;
-    private final OperationLogRepository operationLogRepository;
+
+    @Autowired(required = false)
+    private OperationLogRepository operationLogRepository;
+
+    public WorkOrderCompletionService(WorkOrderDao workOrderDao, PartDao partDao,
+                                       PartUsageDao partUsageDao, SettlementDao settlementDao,
+                                       StringRedisTemplate redisTemplate) {
+        this.workOrderDao = workOrderDao;
+        this.partDao = partDao;
+        this.partUsageDao = partUsageDao;
+        this.settlementDao = settlementDao;
+        this.redisTemplate = redisTemplate;
+    }
 
     /**
      * 完工主入口，带 @Transactional 保证 MySQL 操作的原子性。
@@ -142,22 +153,24 @@ public class WorkOrderCompletionService {
                 }
 
                 // 写 MongoDB 操作日志
-                try {
-                    String detail = String.format(
-                            "工单[%d]完工，备件费=%.2f，工时费=%.2f，实收=%.2f，结算单ID=%d",
-                            workOrderId, finalPartAmount, workOrder.getLaborCost(),
-                            finalTotal, finalSettlementId);
-                    OperationLog opLog = OperationLog.builder()
-                            .businessType("WORK_ORDER")
-                            .businessId(workOrderId)
-                            .action("COMPLETE")
-                            .operatorId(operatorId)
-                            .detail(detail)
-                            .createdAt(LocalDateTime.now())
-                            .build();
-                    operationLogRepository.save(opLog);
-                } catch (Exception e) {
-                    log.error("写 MongoDB 操作日志失败，workOrderId={}", workOrderId, e);
+                if (operationLogRepository != null) {
+                    try {
+                        String detail = String.format(
+                                "工单[%d]完工，备件费=%.2f，工时费=%.2f，实收=%.2f，结算单ID=%d",
+                                workOrderId, finalPartAmount, workOrder.getLaborCost(),
+                                finalTotal, finalSettlementId);
+                        OperationLog opLog = OperationLog.builder()
+                                .businessType("WORK_ORDER")
+                                .businessId(workOrderId)
+                                .action("COMPLETE")
+                                .operatorId(operatorId)
+                                .detail(detail)
+                                .createdAt(LocalDateTime.now())
+                                .build();
+                        operationLogRepository.save(opLog);
+                    } catch (Exception e) {
+                        log.error("写 MongoDB 操作日志失败，workOrderId={}", workOrderId, e);
+                    }
                 }
             }
         });

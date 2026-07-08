@@ -23,7 +23,7 @@ public class ApiResponse<T> {
         return new ApiResponse<>(200, "成功", null);
     }
 
-    public static ApiResponse<Void> fail(int code, String message) {
+    public static <T> ApiResponse<T> fail(int code, String message) {
         return new ApiResponse<>(code, message, null);
     }
 

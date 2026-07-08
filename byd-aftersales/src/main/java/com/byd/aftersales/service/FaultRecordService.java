@@ -1,10 +1,13 @@
 package com.byd.aftersales.service;
 
+import com.byd.aftersales.auth.AuthContext;
+import com.byd.aftersales.auth.AuthUser;
 import com.byd.aftersales.common.BusinessException;
 import com.byd.aftersales.common.IdGenerator;
 import com.byd.aftersales.dao.FaultRecordDao;
 import com.byd.aftersales.dao.VehicleDao;
 import com.byd.aftersales.domain.FaultRecord;
+import com.byd.aftersales.domain.Vehicle;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,8 +37,9 @@ public class FaultRecordService {
         if (record.getStatus() == null || record.getStatus().isBlank()) {
             record.setStatus("REGISTERED");
         }
+        Vehicle vehicle = vehicleDao.findByVin(record.getVin()).orElseThrow(() -> new BusinessException("车辆不存在"));
+        fillActorIds(record, vehicle);
         validate(record);
-        vehicleDao.findByVin(record.getVin()).orElseThrow(() -> new BusinessException("车辆不存在"));
         faultRecordDao.insert(record);
     }
 
@@ -65,6 +69,16 @@ public class FaultRecordService {
 
     public List<FaultRecord> findAll() {
         return faultRecordDao.findAll();
+    }
+
+    private void fillActorIds(FaultRecord record, Vehicle vehicle) {
+        if (record.getOwnerId() == null) {
+            record.setOwnerId(vehicle.getOwnerId());
+        }
+        AuthUser current = AuthContext.get();
+        if (record.getAdvisorId() == null && current != null && "ADVISOR".equals(current.getRole())) {
+            record.setAdvisorId(current.getUserId());
+        }
     }
 
     private void validate(FaultRecord record) {

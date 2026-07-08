@@ -16,6 +16,11 @@ public class Appointment {
     private LocalDateTime updatedAt;
     private Integer deleted;
 
+    /** 展示字段：关联 sys_user.real_name */
+    private String ownerName;
+    /** 展示字段：关联 service_center.center_name */
+    private String centerName;
+
     public Long getAppointmentId() {
         return appointmentId;
     }
@@ -102,5 +107,21 @@ public class Appointment {
 
     public void setDeleted(Integer deleted) {
         this.deleted = deleted;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public String getCenterName() {
+        return centerName;
+    }
+
+    public void setCenterName(String centerName) {
+        this.centerName = centerName;
     }
 }

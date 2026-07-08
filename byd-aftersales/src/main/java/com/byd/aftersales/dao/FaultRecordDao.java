@@ -56,6 +56,12 @@ public class FaultRecordDao extends BaseJdbcDao {
         return jdbc().update("UPDATE fault_record SET deleted = 1 WHERE fault_no = ?", faultNo);
     }
 
+    public Optional<FaultRecord> findById(Long faultId) {
+        List<FaultRecord> records = jdbc().query("SELECT * FROM fault_record WHERE fault_id = ? AND deleted = 0",
+                rowMapper, faultId);
+        return records.stream().findFirst();
+    }
+
     public Optional<FaultRecord> findByNo(String faultNo) {
         List<FaultRecord> records = jdbc().query("SELECT * FROM fault_record WHERE fault_no = ? AND deleted = 0",
                 rowMapper, faultNo);

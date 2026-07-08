@@ -1,10 +1,15 @@
 package com.byd.aftersales.service;
 
+import com.byd.aftersales.auth.AuthContext;
+import com.byd.aftersales.auth.AuthUser;
 import com.byd.aftersales.common.BusinessException;
 import com.byd.aftersales.common.IdGenerator;
 import com.byd.aftersales.dao.AppointmentDao;
+import com.byd.aftersales.dao.ServiceCenterDao;
+import com.byd.aftersales.dao.SysUserDao;
 import com.byd.aftersales.dao.VehicleDao;
 import com.byd.aftersales.domain.Appointment;
+import com.byd.aftersales.domain.Vehicle;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,10 +22,17 @@ public class AppointmentService {
 
     private final AppointmentDao appointmentDao;
     private final VehicleDao vehicleDao;
+    private final SysUserDao sysUserDao;
+    private final ServiceCenterDao serviceCenterDao;
 
-    public AppointmentService(AppointmentDao appointmentDao, VehicleDao vehicleDao) {
+    public AppointmentService(AppointmentDao appointmentDao,
+                              VehicleDao vehicleDao,
+                              SysUserDao sysUserDao,
+                              ServiceCenterDao serviceCenterDao) {
         this.appointmentDao = appointmentDao;
         this.vehicleDao = vehicleDao;
+        this.sysUserDao = sysUserDao;
+        this.serviceCenterDao = serviceCenterDao;
     }
 
     public void create(Appointment appointment) {
@@ -30,8 +42,9 @@ public class AppointmentService {
         if (appointment.getStatus() == null || appointment.getStatus().isBlank()) {
             appointment.setStatus("PENDING");
         }
+        Vehicle vehicle = vehicleDao.findByVin(appointment.getVin()).orElseThrow(() -> new BusinessException("车辆不存在"));
+        fillOwnerId(appointment, vehicle);
         validate(appointment);
-        vehicleDao.findByVin(appointment.getVin()).orElseThrow(() -> new BusinessException("车辆不存在"));
         appointmentDao.insert(appointment);
     }
 
@@ -51,16 +64,46 @@ public class AppointmentService {
     }
 
     public Appointment findByNo(String appointmentNo) {
-        return appointmentDao.findByNo(appointmentNo)
+        Appointment appointment = appointmentDao.findByNo(appointmentNo)
                 .orElseThrow(() -> new BusinessException("预约记录不存在"));
+        enrichDisplayFields(appointment);
+        return appointment;
     }
 
     public List<Appointment> findByVin(String vin) {
-        return appointmentDao.findByVin(vin);
+        return enrichDisplayFields(appointmentDao.findByVin(vin));
     }
 
     public List<Appointment> findAll() {
-        return appointmentDao.findAll();
+        return enrichDisplayFields(appointmentDao.findAll());
+    }
+
+    private List<Appointment> enrichDisplayFields(List<Appointment> appointments) {
+        appointments.forEach(this::enrichDisplayFields);
+        return appointments;
+    }
+
+    private void enrichDisplayFields(Appointment appointment) {
+        if (appointment.getOwnerId() != null) {
+            sysUserDao.findById(appointment.getOwnerId())
+                    .ifPresent(user -> appointment.setOwnerName(user.getRealName()));
+        }
+        if (appointment.getCenterId() != null) {
+            serviceCenterDao.findById(appointment.getCenterId())
+                    .ifPresent(center -> appointment.setCenterName(center.getCenterName()));
+        }
+    }
+
+    private void fillOwnerId(Appointment appointment, Vehicle vehicle) {
+        if (appointment.getOwnerId() != null && appointment.getOwnerId() > 0) {
+            return;
+        }
+        AuthUser current = AuthContext.get();
+        if (current != null && "OWNER".equals(current.getRole())) {
+            appointment.setOwnerId(current.getUserId());
+            return;
+        }
+        appointment.setOwnerId(vehicle.getOwnerId());
     }
 
     private void validate(Appointment appointment) {

@@ -59,6 +59,13 @@ public class SysUserDao extends BaseJdbcDao {
         return users.stream().findFirst();
     }
 
+    public Optional<SysUser> findByUsername(String username) {
+        List<SysUser> users = jdbc().query(
+                "SELECT * FROM sys_user WHERE username = ? AND deleted = 0",
+                rowMapper, username);
+        return users.stream().findFirst();
+    }
+
     public List<SysUser> findAll() {
         return jdbc().query("SELECT * FROM sys_user WHERE deleted = 0 ORDER BY user_id DESC", rowMapper);
     }

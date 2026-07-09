@@ -18,6 +18,8 @@ public class Vehicle {
     private LocalDate insuranceExpireDate;
     private BigDecimal currentMileage;
     private String vehicleStatus;
+    private String ownerName;
+    private String ownerPhone;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer deleted;
@@ -116,6 +118,22 @@ public class Vehicle {
 
     public void setVehicleStatus(String vehicleStatus) {
         this.vehicleStatus = vehicleStatus;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public String getOwnerPhone() {
+        return ownerPhone;
+    }
+
+    public void setOwnerPhone(String ownerPhone) {
+        this.ownerPhone = ownerPhone;
     }
 
     public LocalDateTime getCreatedAt() {

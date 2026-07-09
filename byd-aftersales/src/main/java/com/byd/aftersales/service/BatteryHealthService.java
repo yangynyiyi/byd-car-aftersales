@@ -7,6 +7,7 @@ import com.byd.aftersales.dao.VehicleDao;
 import com.byd.aftersales.domain.BatteryHealthRecord;
 import com.byd.aftersales.domain.Vehicle;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,16 +19,20 @@ public class BatteryHealthService {
     private final VehicleDao vehicleDao;
     private final OperationLogDao operationLogDao;
     private final VehicleReminderService reminderService;
+    private final VehicleHealthService vehicleHealthService;
 
     public BatteryHealthService(BatteryHealthDao batteryHealthDao, VehicleDao vehicleDao,
                                 OperationLogDao operationLogDao,
-                                VehicleReminderService reminderService) {
+                                VehicleReminderService reminderService,
+                                VehicleHealthService vehicleHealthService) {
         this.batteryHealthDao = batteryHealthDao;
         this.vehicleDao = vehicleDao;
         this.operationLogDao = operationLogDao;
         this.reminderService = reminderService;
+        this.vehicleHealthService = vehicleHealthService;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public BatteryHealthRecord create(BatteryHealthRecord record) {
         if (record.getVin() == null || record.getVin().isBlank()) {
             throw new BusinessException("VIN 不能为空");
@@ -43,7 +48,10 @@ public class BatteryHealthService {
             record.setWarningLevel(resolveWarningLevel(record.getSoh()));
         }
         Long id = batteryHealthDao.insert(record);
-        return batteryHealthDao.findById(id).orElseThrow(() -> new BusinessException("电池记录保存失败"));
+        BatteryHealthRecord saved = batteryHealthDao.findById(id)
+                .orElseThrow(() -> new BusinessException("电池记录保存失败"));
+        vehicleHealthService.createFromBatteryRecord(saved);
+        return saved;
     }
 
     public List<BatteryHealthRecord> list(String level) {

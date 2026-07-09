@@ -153,6 +153,36 @@ CREATE TABLE IF NOT EXISTS battery_health_record (
     CONSTRAINT fk_battery_vehicle FOREIGN KEY (vin) REFERENCES vehicle (vin)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- 车辆健康快照表：一辆车的一次综合健康检查总览。
+CREATE TABLE IF NOT EXISTS vehicle_health_snapshot (
+    snapshot_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    vin CHAR(17) NOT NULL,
+    health_score INT NOT NULL DEFAULT 100,
+    overall_level VARCHAR(20) NOT NULL DEFAULT 'NORMAL',
+    summary VARCHAR(200) NOT NULL,
+    suggestion TEXT,
+    detect_time DATETIME NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_vehicle_health_vin_time (vin, detect_time),
+    CONSTRAINT fk_vehicle_health_snapshot_vehicle FOREIGN KEY (vin) REFERENCES vehicle (vin)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 车辆健康项目表：快照下的电池、胎压、制动、低压电池、充电系统等检查项。
+CREATE TABLE IF NOT EXISTS vehicle_health_item (
+    item_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    snapshot_id BIGINT NOT NULL,
+    item_type VARCHAR(40) NOT NULL,
+    item_name VARCHAR(80) NOT NULL,
+    level VARCHAR(20) NOT NULL DEFAULT 'NORMAL',
+    metric_value VARCHAR(80),
+    description TEXT,
+    action_suggestion VARCHAR(200),
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_vehicle_health_item_snapshot (snapshot_id),
+    KEY idx_vehicle_health_item_type_level (item_type, level),
+    CONSTRAINT fk_vehicle_health_item_snapshot FOREIGN KEY (snapshot_id) REFERENCES vehicle_health_snapshot (snapshot_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- 维修工单表：根据故障登记生成维修工单，分派给维修技师处理。
 CREATE TABLE IF NOT EXISTS work_order (
     work_order_id BIGINT PRIMARY KEY AUTO_INCREMENT,

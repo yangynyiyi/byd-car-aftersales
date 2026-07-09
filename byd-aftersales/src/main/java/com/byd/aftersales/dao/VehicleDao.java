@@ -12,6 +12,12 @@ import java.util.Optional;
 @Component
 public class VehicleDao extends BaseJdbcDao {
 
+    private static final String BASE_SELECT = """
+            SELECT v.*, u.real_name AS owner_name, u.phone AS owner_phone
+            FROM vehicle v
+            JOIN sys_user u ON v.owner_id = u.user_id
+            """;
+
     private final RowMapper<Vehicle> rowMapper = (rs, rowNum) -> {
         Vehicle vehicle = new Vehicle();
         vehicle.setVin(rs.getString("vin"));
@@ -31,6 +37,8 @@ public class VehicleDao extends BaseJdbcDao {
         vehicle.setInsuranceExpireDate(insuranceExpireDate == null ? null : insuranceExpireDate.toLocalDate());
         vehicle.setCurrentMileage(rs.getBigDecimal("current_mileage"));
         vehicle.setVehicleStatus(rs.getString("vehicle_status"));
+        vehicle.setOwnerName(rs.getString("owner_name"));
+        vehicle.setOwnerPhone(rs.getString("owner_phone"));
         vehicle.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         vehicle.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         vehicle.setDeleted(rs.getInt("deleted"));
@@ -74,17 +82,17 @@ public class VehicleDao extends BaseJdbcDao {
     }
 
     public Optional<Vehicle> findByVin(String vin) {
-        List<Vehicle> vehicles = jdbc().query("SELECT * FROM vehicle WHERE vin = ? AND deleted = 0",
+        List<Vehicle> vehicles = jdbc().query(BASE_SELECT + " WHERE v.vin = ? AND v.deleted = 0",
                 rowMapper, vin);
         return vehicles.stream().findFirst();
     }
 
     public List<Vehicle> findByOwnerId(Long ownerId) {
-        return jdbc().query("SELECT * FROM vehicle WHERE owner_id = ? AND deleted = 0 ORDER BY created_at DESC",
+        return jdbc().query(BASE_SELECT + " WHERE v.owner_id = ? AND v.deleted = 0 ORDER BY v.created_at DESC",
                 rowMapper, ownerId);
     }
 
     public List<Vehicle> findAll() {
-        return jdbc().query("SELECT * FROM vehicle WHERE deleted = 0 ORDER BY created_at DESC", rowMapper);
+        return jdbc().query(BASE_SELECT + " WHERE v.deleted = 0 ORDER BY v.created_at DESC", rowMapper);
     }
 }

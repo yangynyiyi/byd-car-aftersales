@@ -2,12 +2,12 @@ USE byd_aftersales;
 
 INSERT INTO sys_user (username, password, real_name, phone, role, status)
 VALUES
-('owner001', '12345678', 'Zhang San', '13800000001', 'OWNER', 'ENABLED'),
-('advisor001', '12345678', 'Li Advisor', '13800000002', 'ADVISOR', 'ENABLED'),
-('tech001', '12345678', 'Wang Technician', '13800000003', 'TECHNICIAN', 'ENABLED'),
-('part001', '12345678', 'Chen Parts', '13800000004', 'PART_ADMIN', 'ENABLED'),
-('manager001', '12345678', 'Zhao Manager', '13800000005', 'SERVICE_MANAGER', 'ENABLED'),
-('admin001', '12345678', 'System Admin', '13800000006', 'ADMIN', 'ENABLED')
+('owner001', '12345678', '张三', '13800000001', 'OWNER', 'ENABLED'),
+('advisor001', '12345678', '李顾问', '13800000002', 'ADVISOR', 'ENABLED'),
+('tech001', '12345678', '王技师', '13800000003', 'TECHNICIAN', 'ENABLED'),
+('part001', '12345678', '陈备件', '13800000004', 'PART_ADMIN', 'ENABLED'),
+('manager001', '12345678', '赵经理', '13800000005', 'SERVICE_MANAGER', 'ENABLED'),
+('admin001', '12345678', '系统管理员', '13800000006', 'ADMIN', 'ENABLED')
 ON DUPLICATE KEY UPDATE
     password = VALUES(password),
     real_name = VALUES(real_name),
@@ -16,18 +16,28 @@ ON DUPLICATE KEY UPDATE
     updated_at = CURRENT_TIMESTAMP;
 
 INSERT INTO service_center (center_name, city, address, phone, status)
-VALUES ('BYD Shenzhen After-Sales Center', 'Shenzhen', 'No. 1 Demo Road', '0755-88888888', 'OPEN');
+SELECT '比亚迪深圳南山售后服务中心', '深圳', '深圳市南山区科技园示范路 1 号', '0755-88888888', 'OPEN'
+WHERE NOT EXISTS (SELECT 1 FROM service_center WHERE phone = '0755-88888888');
+
+UPDATE service_center
+SET center_name = '比亚迪深圳南山售后服务中心',
+    city = '深圳',
+    address = '深圳市南山区科技园示范路 1 号'
+WHERE center_name = 'BYD Shenzhen After-Sales Center';
 
 INSERT INTO vehicle
     (vin, owner_id, license_plate, model, battery_model, purchase_date,
      last_maintenance_date, next_maintenance_date, next_inspection_date, insurance_expire_date,
      current_mileage, vehicle_status)
 VALUES
-    ('LC0CE4DB7N0000001', 1, 'YueB12345', 'Han EV', 'Blade Battery A1', '2024-05-01',
+    ('LC0CE4DB7N0000001', 1, '粤B·12345', '汉 EV', '刀片电池 A1 型', '2024-05-01',
      DATE_SUB(CURDATE(), INTERVAL 5 MONTH), DATE_ADD(CURDATE(), INTERVAL 10 DAY),
      DATE_ADD(CURDATE(), INTERVAL 25 DAY), DATE_ADD(CURDATE(), INTERVAL 40 DAY),
      18320.5, 'NORMAL')
 ON DUPLICATE KEY UPDATE
+    license_plate = VALUES(license_plate),
+    model = VALUES(model),
+    battery_model = VALUES(battery_model),
     last_maintenance_date = VALUES(last_maintenance_date),
     next_maintenance_date = VALUES(next_maintenance_date),
     next_inspection_date = VALUES(next_inspection_date),

@@ -21,6 +21,14 @@ public class VehicleDao extends BaseJdbcDao {
         vehicle.setBatteryModel(rs.getString("battery_model"));
         Date purchaseDate = rs.getDate("purchase_date");
         vehicle.setPurchaseDate(purchaseDate == null ? null : purchaseDate.toLocalDate());
+        Date lastMaintenanceDate = rs.getDate("last_maintenance_date");
+        vehicle.setLastMaintenanceDate(lastMaintenanceDate == null ? null : lastMaintenanceDate.toLocalDate());
+        Date nextMaintenanceDate = rs.getDate("next_maintenance_date");
+        vehicle.setNextMaintenanceDate(nextMaintenanceDate == null ? null : nextMaintenanceDate.toLocalDate());
+        Date nextInspectionDate = rs.getDate("next_inspection_date");
+        vehicle.setNextInspectionDate(nextInspectionDate == null ? null : nextInspectionDate.toLocalDate());
+        Date insuranceExpireDate = rs.getDate("insurance_expire_date");
+        vehicle.setInsuranceExpireDate(insuranceExpireDate == null ? null : insuranceExpireDate.toLocalDate());
         vehicle.setCurrentMileage(rs.getBigDecimal("current_mileage"));
         vehicle.setVehicleStatus(rs.getString("vehicle_status"));
         vehicle.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
@@ -36,24 +44,29 @@ public class VehicleDao extends BaseJdbcDao {
     public int insert(Vehicle vehicle) {
         String sql = """
                 INSERT INTO vehicle
-                (vin, owner_id, license_plate, model, battery_model, purchase_date, current_mileage, vehicle_status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (vin, owner_id, license_plate, model, battery_model, purchase_date,
+                 last_maintenance_date, next_maintenance_date, next_inspection_date, insurance_expire_date,
+                 current_mileage, vehicle_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         return jdbc().update(sql, vehicle.getVin(), vehicle.getOwnerId(), vehicle.getLicensePlate(),
                 vehicle.getModel(), vehicle.getBatteryModel(), vehicle.getPurchaseDate(),
-                vehicle.getCurrentMileage(), vehicle.getVehicleStatus());
+                vehicle.getLastMaintenanceDate(), vehicle.getNextMaintenanceDate(), vehicle.getNextInspectionDate(),
+                vehicle.getInsuranceExpireDate(), vehicle.getCurrentMileage(), vehicle.getVehicleStatus());
     }
 
     public int update(Vehicle vehicle) {
         String sql = """
                 UPDATE vehicle
                 SET owner_id = ?, license_plate = ?, model = ?, battery_model = ?, purchase_date = ?,
-                    current_mileage = ?, vehicle_status = ?
+                    last_maintenance_date = ?, next_maintenance_date = ?, next_inspection_date = ?,
+                    insurance_expire_date = ?, current_mileage = ?, vehicle_status = ?
                 WHERE vin = ? AND deleted = 0
                 """;
         return jdbc().update(sql, vehicle.getOwnerId(), vehicle.getLicensePlate(), vehicle.getModel(),
-                vehicle.getBatteryModel(), vehicle.getPurchaseDate(), vehicle.getCurrentMileage(),
-                vehicle.getVehicleStatus(), vehicle.getVin());
+                vehicle.getBatteryModel(), vehicle.getPurchaseDate(), vehicle.getLastMaintenanceDate(),
+                vehicle.getNextMaintenanceDate(), vehicle.getNextInspectionDate(), vehicle.getInsuranceExpireDate(),
+                vehicle.getCurrentMileage(), vehicle.getVehicleStatus(), vehicle.getVin());
     }
 
     public int softDelete(String vin) {

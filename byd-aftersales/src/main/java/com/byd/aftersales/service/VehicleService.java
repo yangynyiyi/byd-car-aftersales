@@ -6,6 +6,7 @@ import com.byd.aftersales.domain.Vehicle;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -28,14 +29,48 @@ public class VehicleService {
         if (vehicle.getVehicleStatus() == null || vehicle.getVehicleStatus().isBlank()) {
             vehicle.setVehicleStatus("NORMAL");
         }
+        fillDefaultReminderDates(vehicle);
         vehicleDao.insert(vehicle);
     }
 
     public void update(String vin, Vehicle vehicle) {
         vehicle.setVin(vin);
+        Vehicle existing = findByVin(vin);
+        keepExistingReminderDates(vehicle, existing);
         validate(vehicle);
         if (vehicleDao.update(vehicle) == 0) {
             throw new BusinessException("车辆不存在");
+        }
+    }
+
+    private void fillDefaultReminderDates(Vehicle vehicle) {
+        LocalDate purchaseDate = vehicle.getPurchaseDate() != null ? vehicle.getPurchaseDate() : LocalDate.now();
+        if (vehicle.getLastMaintenanceDate() == null) {
+            vehicle.setLastMaintenanceDate(purchaseDate);
+        }
+        if (vehicle.getNextMaintenanceDate() == null) {
+            vehicle.setNextMaintenanceDate(purchaseDate.plusMonths(6));
+        }
+        if (vehicle.getNextInspectionDate() == null) {
+            vehicle.setNextInspectionDate(purchaseDate.plusYears(2));
+        }
+        if (vehicle.getInsuranceExpireDate() == null) {
+            vehicle.setInsuranceExpireDate(purchaseDate.plusYears(1));
+        }
+    }
+
+    private void keepExistingReminderDates(Vehicle vehicle, Vehicle existing) {
+        if (vehicle.getLastMaintenanceDate() == null) {
+            vehicle.setLastMaintenanceDate(existing.getLastMaintenanceDate());
+        }
+        if (vehicle.getNextMaintenanceDate() == null) {
+            vehicle.setNextMaintenanceDate(existing.getNextMaintenanceDate());
+        }
+        if (vehicle.getNextInspectionDate() == null) {
+            vehicle.setNextInspectionDate(existing.getNextInspectionDate());
+        }
+        if (vehicle.getInsuranceExpireDate() == null) {
+            vehicle.setInsuranceExpireDate(existing.getInsuranceExpireDate());
         }
     }
 

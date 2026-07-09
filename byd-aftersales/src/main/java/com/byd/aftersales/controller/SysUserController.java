@@ -42,6 +42,12 @@ public class SysUserController {
         return ApiResponse.ok();
     }
 
+    @PutMapping("/{userId}/reset-password")
+    public ApiResponse<Void> resetPassword(@PathVariable Long userId) {
+        sysUserService.resetPassword(userId);
+        return ApiResponse.ok();
+    }
+
     @GetMapping("/{userId}")
     public ApiResponse<SysUser> findById(@PathVariable Long userId) {
         return ApiResponse.ok(sysUserService.findById(userId));

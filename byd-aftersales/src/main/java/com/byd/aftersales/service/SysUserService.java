@@ -4,11 +4,16 @@ import com.byd.aftersales.auth.AuthUser;
 import com.byd.aftersales.auth.TokenStore;
 import com.byd.aftersales.common.BusinessException;
 import com.byd.aftersales.dao.SysUserDao;
+import com.byd.aftersales.dao.VehicleDao;
 import com.byd.aftersales.domain.SysUser;
+import com.byd.aftersales.domain.Vehicle;
 import com.byd.aftersales.dto.LoginResponse;
 import com.byd.aftersales.dto.RegisterRequest;
+import com.byd.aftersales.service.VehicleService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -16,10 +21,15 @@ public class SysUserService {
 
     private final SysUserDao sysUserDao;
     private final TokenStore tokenStore;
+    private final VehicleDao vehicleDao;
+    private final VehicleService vehicleService;
 
-    public SysUserService(SysUserDao sysUserDao, TokenStore tokenStore) {
+    public SysUserService(SysUserDao sysUserDao, TokenStore tokenStore,
+                          VehicleDao vehicleDao, VehicleService vehicleService) {
         this.sysUserDao = sysUserDao;
         this.tokenStore = tokenStore;
+        this.vehicleDao = vehicleDao;
+        this.vehicleService = vehicleService;
     }
 
     public void create(SysUser user) {
@@ -43,6 +53,12 @@ public class SysUserService {
 
     public void delete(Long userId) {
         if (sysUserDao.softDelete(userId) == 0) {
+            throw new BusinessException("用户不存在");
+        }
+    }
+
+    public void resetPassword(Long userId) {
+        if (sysUserDao.resetPassword(userId, "12345678") == 0) {
             throw new BusinessException("用户不存在");
         }
     }
@@ -93,16 +109,25 @@ public class SysUserService {
         tokenStore.revoke(token);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public LoginResponse register(RegisterRequest request) {
         requireText(request.getUsername(), "用户名不能为空");
         requireText(request.getPassword(), "密码不能为空");
         requireText(request.getRealName(), "真实姓名不能为空");
         requireText(request.getPhone(), "手机号不能为空");
+        requireText(request.getVin(), "VIN 不能为空");
+        requireText(request.getLicensePlate(), "车牌不能为空");
+        requireText(request.getModel(), "车型不能为空");
         if (request.getPassword().length() < 6) {
             throw new BusinessException("密码至少 6 位");
         }
         if (sysUserDao.findByUsername(request.getUsername()).isPresent()) {
             throw new BusinessException("用户名已存在");
+        }
+
+        String normalizedVin = request.getVin().trim().toUpperCase();
+        if (vehicleDao.findByVin(normalizedVin).isPresent()) {
+            throw new BusinessException("该车辆已登记，请联系门店绑定");
         }
 
         SysUser user = new SysUser();
@@ -113,6 +138,22 @@ public class SysUserService {
         user.setRole("OWNER");
         user.setStatus("ENABLED");
         sysUserDao.insert(user);
+
+        SysUser registered = sysUserDao.findByUsername(user.getUsername())
+                .orElseThrow(() -> new BusinessException("注册失败，请重试"));
+
+        Vehicle vehicle = new Vehicle();
+        vehicle.setVin(normalizedVin);
+        vehicle.setOwnerId(registered.getUserId());
+        vehicle.setLicensePlate(request.getLicensePlate().trim());
+        vehicle.setModel(request.getModel().trim());
+        String batteryModel = request.getBatteryModel();
+        vehicle.setBatteryModel(batteryModel != null && !batteryModel.isBlank()
+                ? batteryModel.trim() : "Blade Battery");
+        vehicle.setCurrentMileage(BigDecimal.ZERO);
+        vehicle.setVehicleStatus("NORMAL");
+        vehicleService.create(vehicle);
+
         return login(user.getUsername(), request.getPassword());
     }
 

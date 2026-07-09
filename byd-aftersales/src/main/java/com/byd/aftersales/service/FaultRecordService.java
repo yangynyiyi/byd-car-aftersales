@@ -52,6 +52,26 @@ public class FaultRecordService {
         }
     }
 
+    public void update(String faultNo, FaultRecord record) {
+        FaultRecord existing = findByNo(faultNo);
+        if ("WORK_ORDER_CREATED".equals(existing.getStatus())) {
+            throw new BusinessException("已生成工单的故障不可编辑");
+        }
+        record.setFaultNo(faultNo);
+        if (record.getStatus() == null || record.getStatus().isBlank()) {
+            record.setStatus(existing.getStatus());
+        }
+        Vehicle vehicle = vehicleDao.findByVin(record.getVin()).orElseThrow(() -> new BusinessException("车辆不存在"));
+        fillActorIds(record, vehicle);
+        if (record.getAdvisorId() == null) {
+            record.setAdvisorId(existing.getAdvisorId());
+        }
+        validate(record);
+        if (faultRecordDao.update(record) == 0) {
+            throw new BusinessException("故障记录不存在");
+        }
+    }
+
     public void delete(String faultNo) {
         if (faultRecordDao.softDelete(faultNo) == 0) {
             throw new BusinessException("故障记录不存在");
@@ -76,7 +96,8 @@ public class FaultRecordService {
             record.setOwnerId(vehicle.getOwnerId());
         }
         AuthUser current = AuthContext.get();
-        if (record.getAdvisorId() == null && current != null && "ADVISOR".equals(current.getRole())) {
+        if (record.getAdvisorId() == null && current != null
+                && ("ADVISOR".equals(current.getRole()) || "ADMIN".equals(current.getRole()))) {
             record.setAdvisorId(current.getUserId());
         }
     }

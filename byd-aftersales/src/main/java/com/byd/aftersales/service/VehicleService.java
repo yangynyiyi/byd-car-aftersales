@@ -21,7 +21,8 @@ public class VehicleService {
         this.vehicleDao = vehicleDao;
     }
 
-    public void create(Vehicle vehicle) {
+    public void create(Vehicle vehicle, Long operatorAdvisorId) {
+        applyAdvisorScope(vehicle, operatorAdvisorId);
         validate(vehicle);
         if (vehicle.getCurrentMileage() == null) {
             vehicle.setCurrentMileage(BigDecimal.ZERO);
@@ -33,9 +34,11 @@ public class VehicleService {
         vehicleDao.insert(vehicle);
     }
 
-    public void update(String vin, Vehicle vehicle) {
+    public void update(String vin, Vehicle vehicle, Long operatorAdvisorId) {
         vehicle.setVin(vin);
         Vehicle existing = findByVin(vin);
+        assertAdvisorAccess(existing, operatorAdvisorId);
+        applyAdvisorScope(vehicle, operatorAdvisorId);
         keepExistingReminderDates(vehicle, existing);
         validate(vehicle);
         if (vehicleDao.update(vehicle) == 0) {
@@ -74,7 +77,8 @@ public class VehicleService {
         }
     }
 
-    public void delete(String vin) {
+    public void delete(String vin, Long operatorAdvisorId) {
+        assertAdvisorAccess(findByVin(vin), operatorAdvisorId);
         if (vehicleDao.softDelete(vin) == 0) {
             throw new BusinessException("车辆不存在");
         }
@@ -84,12 +88,42 @@ public class VehicleService {
         return vehicleDao.findByVin(vin).orElseThrow(() -> new BusinessException("车辆不存在"));
     }
 
+    public Vehicle findByVin(String vin, Long advisorId) {
+        Vehicle vehicle = findByVin(vin);
+        assertAdvisorAccess(vehicle, advisorId);
+        return vehicle;
+    }
+
     public List<Vehicle> findByOwnerId(Long ownerId) {
         return vehicleDao.findByOwnerId(ownerId);
     }
 
+    public List<Vehicle> findByAdvisorId(Long advisorId) {
+        return vehicleDao.findByAdvisorId(advisorId);
+    }
+
     public List<Vehicle> findAll() {
         return vehicleDao.findAll();
+    }
+
+    public List<Vehicle> list(Long advisorId) {
+        if (advisorId != null) {
+            return findByAdvisorId(advisorId);
+        }
+        return findAll();
+    }
+
+    private void assertAdvisorAccess(Vehicle vehicle, Long advisorId) {
+        if (advisorId != null && !advisorId.equals(vehicle.getAdvisorId())) {
+            throw new BusinessException("无权操作该车辆");
+        }
+    }
+
+    /** 顾问操作车辆时强制绑定为本人，防止越权指定其他顾问 */
+    private void applyAdvisorScope(Vehicle vehicle, Long operatorAdvisorId) {
+        if (operatorAdvisorId != null) {
+            vehicle.setAdvisorId(operatorAdvisorId);
+        }
     }
 
     private void validate(Vehicle vehicle) {
@@ -98,6 +132,9 @@ public class VehicleService {
         }
         if (vehicle.getOwnerId() == null) {
             throw new BusinessException("车主 ID 不能为空");
+        }
+        if (vehicle.getAdvisorId() == null) {
+            throw new BusinessException("负责顾问不能为空");
         }
         if (vehicle.getModel() == null || vehicle.getModel().isBlank()) {
             throw new BusinessException("车型不能为空");

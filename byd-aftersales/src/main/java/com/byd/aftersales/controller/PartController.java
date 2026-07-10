@@ -32,7 +32,7 @@ public class PartController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Part> getById(@PathVariable Long id) {
+    public ApiResponse<Part> getById(@PathVariable("id") Long id) {
         return ApiResponse.ok(partService.getById(id));
     }
 
@@ -42,18 +42,18 @@ public class PartController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<Part> update(@PathVariable Long id, @RequestBody PartCreateRequest request) {
+    public ApiResponse<Part> update(@PathVariable("id") Long id, @RequestBody PartCreateRequest request) {
         return ApiResponse.ok(partService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable Long id) {
+    public ApiResponse<Void> delete(@PathVariable("id") Long id) {
         partService.delete(id);
         return ApiResponse.ok();
     }
 
     @PostMapping("/{id}/stock")
-    public ApiResponse<Part> addStock(@PathVariable Long id, @RequestBody Map<String, Integer> body) {
+    public ApiResponse<Part> addStock(@PathVariable("id") Long id, @RequestBody Map<String, Integer> body) {
         return ApiResponse.ok(partService.addStock(id, body.get("quantity")));
     }
 

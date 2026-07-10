@@ -29,7 +29,7 @@ public class AgentDiagnosisController {
     }
 
     @GetMapping("/fault/{faultId}")
-    public ApiResponse<List<AgentDiagnosis>> listByFault(@PathVariable Long faultId) {
+    public ApiResponse<List<AgentDiagnosis>> listByFault(@PathVariable("faultId") Long faultId) {
         return ApiResponse.ok(agentDiagnosisService.listByFaultId(faultId));
     }
 }

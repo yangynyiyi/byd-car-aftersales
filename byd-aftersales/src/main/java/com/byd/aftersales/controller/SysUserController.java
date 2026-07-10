@@ -31,25 +31,25 @@ public class SysUserController {
     }
 
     @PutMapping("/{userId}")
-    public ApiResponse<Void> update(@PathVariable Long userId, @RequestBody SysUser user) {
+    public ApiResponse<Void> update(@PathVariable("userId") Long userId, @RequestBody SysUser user) {
         sysUserService.update(userId, user);
         return ApiResponse.ok();
     }
 
     @DeleteMapping("/{userId}")
-    public ApiResponse<Void> delete(@PathVariable Long userId) {
+    public ApiResponse<Void> delete(@PathVariable("userId") Long userId) {
         sysUserService.delete(userId);
         return ApiResponse.ok();
     }
 
     @PutMapping("/{userId}/reset-password")
-    public ApiResponse<Void> resetPassword(@PathVariable Long userId) {
+    public ApiResponse<Void> resetPassword(@PathVariable("userId") Long userId) {
         sysUserService.resetPassword(userId);
         return ApiResponse.ok();
     }
 
     @GetMapping("/{userId}")
-    public ApiResponse<SysUser> findById(@PathVariable Long userId) {
+    public ApiResponse<SysUser> findById(@PathVariable("userId") Long userId) {
         return ApiResponse.ok(sysUserService.findById(userId));
     }
 

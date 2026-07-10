@@ -12,6 +12,15 @@ import java.util.Optional;
 @Component
 public class FaultRecordDao extends BaseJdbcDao {
 
+    private static final String BASE_SELECT = """
+            SELECT f.*, own.real_name AS owner_name, adv.real_name AS advisor_name,
+                   veh.license_plate, veh.model
+            FROM fault_record f
+            LEFT JOIN sys_user own ON f.owner_id = own.user_id
+            LEFT JOIN sys_user adv ON f.advisor_id = adv.user_id
+            LEFT JOIN vehicle veh ON f.vin = veh.vin AND veh.deleted = 0
+            """;
+
     private final RowMapper<FaultRecord> rowMapper = (rs, rowNum) -> {
         FaultRecord record = new FaultRecord();
         record.setFaultId(rs.getLong("fault_id"));
@@ -24,6 +33,10 @@ public class FaultRecordDao extends BaseJdbcDao {
         record.setFaultDescription(rs.getString("fault_description"));
         record.setFaultLevel(rs.getString("fault_level"));
         record.setStatus(rs.getString("status"));
+        record.setOwnerName(rs.getString("owner_name"));
+        record.setAdvisorName(rs.getString("advisor_name"));
+        record.setLicensePlate(rs.getString("license_plate"));
+        record.setModel(rs.getString("model"));
         Timestamp createdAt = rs.getTimestamp("created_at");
         Timestamp updatedAt = rs.getTimestamp("updated_at");
         record.setCreatedAt(createdAt == null ? null : createdAt.toLocalDateTime());
@@ -68,24 +81,35 @@ public class FaultRecordDao extends BaseJdbcDao {
     }
 
     public Optional<FaultRecord> findById(Long faultId) {
-        List<FaultRecord> records = jdbc().query("SELECT * FROM fault_record WHERE fault_id = ? AND deleted = 0",
+        List<FaultRecord> records = jdbc().query(
+                BASE_SELECT + " WHERE f.fault_id = ? AND f.deleted = 0",
                 rowMapper, faultId);
         return records.stream().findFirst();
     }
 
     public Optional<FaultRecord> findByNo(String faultNo) {
-        List<FaultRecord> records = jdbc().query("SELECT * FROM fault_record WHERE fault_no = ? AND deleted = 0",
+        List<FaultRecord> records = jdbc().query(
+                BASE_SELECT + " WHERE f.fault_no = ? AND f.deleted = 0",
                 rowMapper, faultNo);
         return records.stream().findFirst();
     }
 
     public List<FaultRecord> findByVin(String vin) {
-        return jdbc().query("""
-                SELECT * FROM fault_record WHERE vin = ? AND deleted = 0 ORDER BY created_at DESC
-                """, rowMapper, vin);
+        return jdbc().query(
+                BASE_SELECT + " WHERE f.vin = ? AND f.deleted = 0 ORDER BY f.created_at DESC",
+                rowMapper, vin);
+    }
+
+    public Optional<FaultRecord> findByAppointmentId(Long appointmentId) {
+        List<FaultRecord> records = jdbc().query(
+                BASE_SELECT + " WHERE f.appointment_id = ? AND f.deleted = 0 LIMIT 1",
+                rowMapper, appointmentId);
+        return records.stream().findFirst();
     }
 
     public List<FaultRecord> findAll() {
-        return jdbc().query("SELECT * FROM fault_record WHERE deleted = 0 ORDER BY created_at DESC", rowMapper);
+        return jdbc().query(
+                BASE_SELECT + " WHERE f.deleted = 0 ORDER BY f.created_at DESC",
+                rowMapper);
     }
 }

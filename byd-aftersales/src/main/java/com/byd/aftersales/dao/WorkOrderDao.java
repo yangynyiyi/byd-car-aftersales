@@ -89,6 +89,12 @@ public class WorkOrderDao extends BaseJdbcDao {
         return jdbc().query("SELECT * FROM work_order WHERE deleted = 0 ORDER BY created_at DESC", rowMapper);
     }
 
+    public boolean existsByFaultId(Long faultId) {
+        Long count = jdbc().queryForObject(
+                "SELECT COUNT(*) FROM work_order WHERE fault_id = ? AND deleted = 0", Long.class, faultId);
+        return count != null && count > 0;
+    }
+
     public int assignTechnician(Long workOrderId, Long technicianId) {
         return jdbc().update(
                 "UPDATE work_order SET technician_id = ?, status = 'ASSIGNED' WHERE work_order_id = ? AND deleted = 0",
@@ -135,5 +141,16 @@ public class WorkOrderDao extends BaseJdbcDao {
                 ORDER BY wo.created_at DESC
                 LIMIT ?
                 """, rowMapper, vin, limit);
+    }
+
+    public long countActiveByVin(String vin) {
+        Long count = jdbc().queryForObject("""
+                SELECT COUNT(*)
+                FROM work_order wo
+                JOIN fault_record f ON wo.fault_id = f.fault_id AND f.deleted = 0
+                WHERE f.vin = ? AND wo.deleted = 0
+                  AND wo.status NOT IN ('COMPLETED', 'CANCELLED')
+                """, Long.class, vin);
+        return count == null ? 0 : count;
     }
 }

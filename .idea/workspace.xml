@@ -4,13 +4,69 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9e085db6-f7a8-425a-aa9f-2bc12518e51b" name="Changes" comment="3demo">
+    <list default="true" id="9e085db6-f7a8-425a-aa9f-2bc12518e51b" name="Changes" comment="新增车辆健康项模型与 API，支持车主车辆健康页由后端数据驱动；扩充中文演示数据并补齐车辆车主信息返回，便于售后健康预警、结算和车辆档案展示。">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/docs/项目进度与开发指南.md" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/docs/项目进度与开发指南.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/byd-aftersales/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/BydAftersalesApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/BydAftersalesApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/common/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/common/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/AgentDiagnosisController.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/AgentDiagnosisController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/AppointmentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/AppointmentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/BatteryHealthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/BatteryHealthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/FaultRecordController.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/FaultRecordController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/PartController.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/PartController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/PartUsageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/PartUsageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/SettlementController.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/SettlementController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/SysUserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/SysUserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/VehicleController.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/VehicleController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/WorkOrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/controller/WorkOrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/AppointmentDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/AppointmentDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/FaultRecordDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/FaultRecordDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/PartDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/PartDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/PartUsageDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/PartUsageDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/SysUserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/SysUserDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/VehicleDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/VehicleDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/WorkOrderDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dao/WorkOrderDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/domain/FaultRecord.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/domain/FaultRecord.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/domain/Part.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/domain/Part.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/domain/Vehicle.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/domain/Vehicle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dto/PartCreateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/dto/PartCreateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/AppointmentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/AppointmentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/FaultRecordService.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/FaultRecordService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/PartService.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/PartService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/PartUsageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/PartUsageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/SysUserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/SysUserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/VehicleService.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/VehicleService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/WorkOrderCompletionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/WorkOrderCompletionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/WorkOrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/java/com/byd/aftersales/service/WorkOrderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/resources/db/migration-20260708-p0.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/resources/db/module4-schema.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/resources/db/sample-data.sql" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/byd-aftersales/src/main/resources/db/schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/src/main/resources/db/schema.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/BydAftersalesApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/BydAftersalesApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/common/ApiResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/common/ApiResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/common/BusinessException.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/common/BusinessException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/common/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/common/GlobalExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/common/IdGenerator.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/common/IdGenerator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/controller/AppointmentController.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/controller/AppointmentController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/controller/FaultRecordController.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/controller/FaultRecordController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/controller/SysUserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/controller/SysUserController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/controller/VehicleController.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/controller/VehicleController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/dao/AppointmentDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/dao/AppointmentDao.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/dao/BaseJdbcDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/dao/BaseJdbcDao.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/dao/FaultRecordDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/dao/FaultRecordDao.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/dao/SysUserDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/dao/SysUserDao.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/dao/VehicleDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/dao/VehicleDao.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/domain/Appointment.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/domain/Appointment.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/domain/FaultRecord.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/domain/FaultRecord.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/domain/SysUser.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/domain/SysUser.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/domain/Vehicle.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/domain/Vehicle.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/service/AppointmentService.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/service/AppointmentService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/service/FaultRecordService.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/service/FaultRecordService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/service/SysUserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/service/SysUserService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/service/VehicleService.class" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/com/byd/aftersales/service/VehicleService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/db/sample-data.sql" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/db/sample-data.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/byd-aftersales/target/classes/db/schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/byd-aftersales/target/classes/db/schema.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -63,6 +119,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
@@ -118,7 +175,39 @@
       <option name="project" value="LOCAL" />
       <updated>1783408745375</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="3demo">
+      <option name="closed" value="true" />
+      <created>1783476448719</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1783476448719</updated>
+    </task>
+    <task id="LOCAL-00004" summary="feat: 售后后端完整实现&#10;&#10;- 登录/注册（注册事务绑定首台 vehicle）&#10;- 结算经理审核、重置密码、工单督办、电池提醒&#10;- 预约/故障/工单/备件/Agent/看板等 API 与 JDBC 实现&#10;- 更新 schema 与 P0 迁移脚本">
+      <option name="closed" value="true" />
+      <created>1783481028358</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1783481028358</updated>
+    </task>
+    <task id="LOCAL-00005" summary="feat: 补齐售后系统 P1 前端功能与故障编辑接口&#10;&#10;- 完善车辆编辑/删除、详情页 getByVin 与真实工单历史&#10;- 补齐故障编辑/删除，并新增故障更新接口&#10;- 优化工单详情 getById、真实时间线、完工表单与历史 Agent 诊断&#10;- 接入备件编辑/删除/入库，优化领用申请展示&#10;- 补充 P1 变更日志与类型定义">
+      <option name="closed" value="true" />
+      <created>1783492043275</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1783492043275</updated>
+    </task>
+    <task id="LOCAL-00006" summary="新增车辆健康项模型与 API，支持车主车辆健康页由后端数据驱动；扩充中文演示数据并补齐车辆车主信息返回，便于售后健康预警、结算和车辆档案展示。">
+      <option name="closed" value="true" />
+      <created>1783566436294</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1783566436294</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -137,6 +226,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="3demo" />
-    <option name="LAST_COMMIT_MESSAGE" value="3demo" />
+    <MESSAGE value="feat: 售后后端完整实现&#10;&#10;- 登录/注册（注册事务绑定首台 vehicle）&#10;- 结算经理审核、重置密码、工单督办、电池提醒&#10;- 预约/故障/工单/备件/Agent/看板等 API 与 JDBC 实现&#10;- 更新 schema 与 P0 迁移脚本" />
+    <MESSAGE value="feat: 补齐售后系统 P1 前端功能与故障编辑接口&#10;&#10;- 完善车辆编辑/删除、详情页 getByVin 与真实工单历史&#10;- 补齐故障编辑/删除，并新增故障更新接口&#10;- 优化工单详情 getById、真实时间线、完工表单与历史 Agent 诊断&#10;- 接入备件编辑/删除/入库，优化领用申请展示&#10;- 补充 P1 变更日志与类型定义" />
+    <MESSAGE value="新增车辆健康项模型与 API，支持车主车辆健康页由后端数据驱动；扩充中文演示数据并补齐车辆车主信息返回，便于售后健康预警、结算和车辆档案展示。" />
+    <option name="LAST_COMMIT_MESSAGE" value="新增车辆健康项模型与 API，支持车主车辆健康页由后端数据驱动；扩充中文演示数据并补齐车辆车主信息返回，便于售后健康预警、结算和车辆档案展示。" />
   </component>
 </project>

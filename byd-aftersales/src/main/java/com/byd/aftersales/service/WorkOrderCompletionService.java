@@ -2,11 +2,14 @@ package com.byd.aftersales.service;
 
 import com.byd.aftersales.common.BusinessException;
 import com.byd.aftersales.common.IdGenerator;
+import com.byd.aftersales.dao.FaultRecordDao;
 import com.byd.aftersales.dao.OperationLogDao;
 import com.byd.aftersales.dao.PartDao;
 import com.byd.aftersales.dao.PartUsageDao;
 import com.byd.aftersales.dao.SettlementDao;
+import com.byd.aftersales.dao.VehicleDao;
 import com.byd.aftersales.dao.WorkOrderDao;
+import com.byd.aftersales.domain.FaultRecord;
 import com.byd.aftersales.domain.Part;
 import com.byd.aftersales.domain.PartUsage;
 import com.byd.aftersales.domain.Settlement;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -29,15 +33,22 @@ public class WorkOrderCompletionService {
     private final PartUsageDao partUsageDao;
     private final SettlementDao settlementDao;
     private final OperationLogDao operationLogDao;
+    private final FaultRecordDao faultRecordDao;
+    private final VehicleDao vehicleDao;
+    private final WarrantyService warrantyService;
 
     public WorkOrderCompletionService(WorkOrderDao workOrderDao, PartDao partDao,
                                       PartUsageDao partUsageDao, SettlementDao settlementDao,
-                                      OperationLogDao operationLogDao) {
+                                      OperationLogDao operationLogDao, FaultRecordDao faultRecordDao,
+                                      VehicleDao vehicleDao, WarrantyService warrantyService) {
         this.workOrderDao = workOrderDao;
         this.partDao = partDao;
         this.partUsageDao = partUsageDao;
         this.settlementDao = settlementDao;
         this.operationLogDao = operationLogDao;
+        this.faultRecordDao = faultRecordDao;
+        this.vehicleDao = vehicleDao;
+        this.warrantyService = warrantyService;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -74,6 +85,14 @@ public class WorkOrderCompletionService {
         if (warrantyAmount == null) {
             warrantyAmount = BigDecimal.ZERO;
         }
+        var warrantyEstimate = warrantyService.estimateForWorkOrder(workOrderId);
+        if (warrantyAmount.compareTo(warrantyEstimate.getGrossAmount()) > 0) {
+            throw new BusinessException("质保减免不能超过费用合计 ¥" + warrantyEstimate.getGrossAmount());
+        }
+        if (warrantyAmount.compareTo(warrantyEstimate.getSuggestedWarrantyAmount()) > 0) {
+            throw new BusinessException("质保减免超过系统建议上限 ¥"
+                    + warrantyEstimate.getSuggestedWarrantyAmount() + "，请核对三包条件");
+        }
         BigDecimal totalAmount = workOrder.getLaborCost()
                 .add(partAmount)
                 .subtract(warrantyAmount);
@@ -91,6 +110,7 @@ public class WorkOrderCompletionService {
 
         Long settlementId = settlementDao.insert(settlement);
         workOrderDao.complete(workOrderId, repairResult);
+        updateVehicleRepairRecord(workOrder, workOrderId, operatorId);
 
         String detail = String.format(
                 "工单[%d]完工，备件费=%.2f，工时费=%.2f，实收=%.2f，结算单ID=%d",
@@ -99,5 +119,29 @@ public class WorkOrderCompletionService {
 
         return settlementDao.findById(settlementId)
                 .orElseThrow(() -> new BusinessException("结算单生成失败"));
+    }
+
+    private void updateVehicleRepairRecord(WorkOrder workOrder, Long workOrderId, Long operatorId) {
+        if (workOrder.getFaultId() == null) {
+            return;
+        }
+        FaultRecord fault = faultRecordDao.findById(workOrder.getFaultId())
+                .orElseThrow(() -> new BusinessException("关联故障记录不存在"));
+        faultRecordDao.updateStatus(fault.getFaultNo(), "CLOSED");
+
+        if (vehicleDao.findByVin(fault.getVin()).isEmpty()) {
+            throw new BusinessException("关联车辆不存在");
+        }
+        LocalDate today = LocalDate.now();
+        LocalDate nextMaintenanceDate = today.plusMonths(6);
+        String vehicleStatus = workOrderDao.countActiveByVin(fault.getVin()) == 0 ? "NORMAL" : "REPAIRING";
+        if (vehicleDao.updateMaintenanceRecord(fault.getVin(), vehicleStatus, today, nextMaintenanceDate) == 0) {
+            throw new BusinessException("更新车辆维修记录失败");
+        }
+
+        String vehicleDetail = String.format(
+                "车辆[%s]维修记录已更新：状态=%s，上次保养=%s，下次保养=%s，关联工单=%d，故障单=%s已关闭",
+                fault.getVin(), vehicleStatus, today, nextMaintenanceDate, workOrderId, fault.getFaultNo());
+        operationLogDao.insert("VEHICLE", workOrderId, "REPAIR_RECORD_UPDATED", operatorId, vehicleDetail);
     }
 }

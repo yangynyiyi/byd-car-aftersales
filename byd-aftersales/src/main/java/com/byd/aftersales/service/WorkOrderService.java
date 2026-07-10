@@ -34,6 +34,15 @@ public class WorkOrderService {
         }
         FaultRecord fault = faultRecordDao.findById(request.getFaultId())
                 .orElseThrow(() -> new BusinessException("故障记录不存在"));
+        if (workOrderDao.existsByFaultId(request.getFaultId())) {
+            throw new BusinessException("该故障已存在维修工单，不能重复创建");
+        }
+        if ("WORK_ORDER_CREATED".equals(fault.getStatus())) {
+            throw new BusinessException("该故障已转工单，不能重复创建");
+        }
+        if ("CLOSED".equals(fault.getStatus())) {
+            throw new BusinessException("该故障已关闭，不能生成工单");
+        }
 
         WorkOrder wo = new WorkOrder();
         wo.setWorkOrderNo(IdGenerator.generate("WO"));

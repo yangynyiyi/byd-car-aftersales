@@ -13,15 +13,17 @@ import java.util.Optional;
 public class VehicleDao extends BaseJdbcDao {
 
     private static final String BASE_SELECT = """
-            SELECT v.*, u.real_name AS owner_name, u.phone AS owner_phone
+            SELECT v.*, u.real_name AS owner_name, u.phone AS owner_phone, a.real_name AS advisor_name
             FROM vehicle v
             JOIN sys_user u ON v.owner_id = u.user_id
+            JOIN sys_user a ON v.advisor_id = a.user_id
             """;
 
     private final RowMapper<Vehicle> rowMapper = (rs, rowNum) -> {
         Vehicle vehicle = new Vehicle();
         vehicle.setVin(rs.getString("vin"));
         vehicle.setOwnerId(rs.getLong("owner_id"));
+        vehicle.setAdvisorId(rs.getLong("advisor_id"));
         vehicle.setLicensePlate(rs.getString("license_plate"));
         vehicle.setModel(rs.getString("model"));
         vehicle.setBatteryModel(rs.getString("battery_model"));
@@ -39,6 +41,7 @@ public class VehicleDao extends BaseJdbcDao {
         vehicle.setVehicleStatus(rs.getString("vehicle_status"));
         vehicle.setOwnerName(rs.getString("owner_name"));
         vehicle.setOwnerPhone(rs.getString("owner_phone"));
+        vehicle.setAdvisorName(rs.getString("advisor_name"));
         vehicle.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         vehicle.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         vehicle.setDeleted(rs.getInt("deleted"));
@@ -52,12 +55,13 @@ public class VehicleDao extends BaseJdbcDao {
     public int insert(Vehicle vehicle) {
         String sql = """
                 INSERT INTO vehicle
-                (vin, owner_id, license_plate, model, battery_model, purchase_date,
+                (vin, owner_id, advisor_id, license_plate, model, battery_model, purchase_date,
                  last_maintenance_date, next_maintenance_date, next_inspection_date, insurance_expire_date,
                  current_mileage, vehicle_status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
-        return jdbc().update(sql, vehicle.getVin(), vehicle.getOwnerId(), vehicle.getLicensePlate(),
+        return jdbc().update(sql, vehicle.getVin(), vehicle.getOwnerId(), vehicle.getAdvisorId(),
+                vehicle.getLicensePlate(),
                 vehicle.getModel(), vehicle.getBatteryModel(), vehicle.getPurchaseDate(),
                 vehicle.getLastMaintenanceDate(), vehicle.getNextMaintenanceDate(), vehicle.getNextInspectionDate(),
                 vehicle.getInsuranceExpireDate(), vehicle.getCurrentMileage(), vehicle.getVehicleStatus());
@@ -66,12 +70,12 @@ public class VehicleDao extends BaseJdbcDao {
     public int update(Vehicle vehicle) {
         String sql = """
                 UPDATE vehicle
-                SET owner_id = ?, license_plate = ?, model = ?, battery_model = ?, purchase_date = ?,
+                SET owner_id = ?, advisor_id = ?, license_plate = ?, model = ?, battery_model = ?, purchase_date = ?,
                     last_maintenance_date = ?, next_maintenance_date = ?, next_inspection_date = ?,
                     insurance_expire_date = ?, current_mileage = ?, vehicle_status = ?
                 WHERE vin = ? AND deleted = 0
                 """;
-        return jdbc().update(sql, vehicle.getOwnerId(), vehicle.getLicensePlate(), vehicle.getModel(),
+        return jdbc().update(sql, vehicle.getOwnerId(), vehicle.getAdvisorId(), vehicle.getLicensePlate(), vehicle.getModel(),
                 vehicle.getBatteryModel(), vehicle.getPurchaseDate(), vehicle.getLastMaintenanceDate(),
                 vehicle.getNextMaintenanceDate(), vehicle.getNextInspectionDate(), vehicle.getInsuranceExpireDate(),
                 vehicle.getCurrentMileage(), vehicle.getVehicleStatus(), vehicle.getVin());
@@ -92,7 +96,22 @@ public class VehicleDao extends BaseJdbcDao {
                 rowMapper, ownerId);
     }
 
+    public List<Vehicle> findByAdvisorId(Long advisorId) {
+        return jdbc().query(BASE_SELECT + " WHERE v.advisor_id = ? AND v.deleted = 0 ORDER BY v.created_at DESC",
+                rowMapper, advisorId);
+    }
+
     public List<Vehicle> findAll() {
         return jdbc().query(BASE_SELECT + " WHERE v.deleted = 0 ORDER BY v.created_at DESC", rowMapper);
+    }
+
+    public int updateMaintenanceRecord(String vin, String vehicleStatus,
+                                       java.time.LocalDate lastMaintenanceDate,
+                                       java.time.LocalDate nextMaintenanceDate) {
+        return jdbc().update("""
+                UPDATE vehicle
+                SET vehicle_status = ?, last_maintenance_date = ?, next_maintenance_date = ?
+                WHERE vin = ? AND deleted = 0
+                """, vehicleStatus, lastMaintenanceDate, nextMaintenanceDate, vin);
     }
 }

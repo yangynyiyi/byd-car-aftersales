@@ -81,11 +81,27 @@ public class PartUsageDao extends BaseJdbcDao {
                 rowMapper, status);
     }
 
+    /** 待备件员审批（含历史 PROPOSED 遗留数据） */
+    public List<PartUsage> findPendingApproval() {
+        return jdbc().query(
+                "SELECT * FROM part_usage WHERE status IN ('APPLIED', 'PROPOSED') ORDER BY created_at DESC",
+                rowMapper);
+    }
+
+    public boolean existsPendingByWorkOrderAndPart(Long workOrderId, Long partId) {
+        Integer count = jdbc().queryForObject("""
+                SELECT COUNT(*) FROM part_usage
+                WHERE work_order_id = ? AND part_id = ?
+                  AND status IN ('PROPOSED', 'APPLIED', 'APPROVED')
+                """, Integer.class, workOrderId, partId);
+        return count != null && count > 0;
+    }
+
     public int approve(Long usageId, Long approvedBy) {
         return jdbc().update("""
                 UPDATE part_usage
                 SET status = 'APPROVED', approved_by = ?, approved_at = NOW()
-                WHERE usage_id = ? AND status = 'APPLIED'
+                WHERE usage_id = ? AND status IN ('APPLIED', 'PROPOSED')
                 """, approvedBy, usageId);
     }
 
@@ -93,7 +109,7 @@ public class PartUsageDao extends BaseJdbcDao {
         return jdbc().update("""
                 UPDATE part_usage
                 SET status = 'REJECTED', approved_by = ?, approved_at = NOW()
-                WHERE usage_id = ? AND status = 'APPLIED'
+                WHERE usage_id = ? AND status IN ('APPLIED', 'PROPOSED')
                 """, approvedBy, usageId);
     }
 

@@ -28,13 +28,15 @@ CREATE TABLE IF NOT EXISTS service_center (
     status VARCHAR(20) NOT NULL DEFAULT 'OPEN',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted TINYINT NOT NULL DEFAULT 0
+    deleted TINYINT NOT NULL DEFAULT 0,
+    UNIQUE KEY uk_service_center_phone (phone)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 车辆档案表：B 同学核心负责表，VIN 为车辆唯一识别码。
 CREATE TABLE IF NOT EXISTS vehicle (
     vin CHAR(17) PRIMARY KEY,
     owner_id BIGINT NOT NULL,
+    advisor_id BIGINT NOT NULL,
     license_plate VARCHAR(20),
     model VARCHAR(50) NOT NULL,
     battery_model VARCHAR(50) NOT NULL,
@@ -49,7 +51,9 @@ CREATE TABLE IF NOT EXISTS vehicle (
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted TINYINT NOT NULL DEFAULT 0,
     KEY idx_vehicle_owner_id (owner_id),
-    CONSTRAINT fk_vehicle_owner FOREIGN KEY (owner_id) REFERENCES sys_user (user_id)
+    KEY idx_vehicle_advisor_id (advisor_id),
+    CONSTRAINT fk_vehicle_owner FOREIGN KEY (owner_id) REFERENCES sys_user (user_id),
+    CONSTRAINT fk_vehicle_advisor FOREIGN KEY (advisor_id) REFERENCES sys_user (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 车辆提醒表：统一承载保养、年检、电池、结算和维修进度等面向车主的提醒。
@@ -213,6 +217,7 @@ CREATE TABLE IF NOT EXISTS part (
     category VARCHAR(50) NOT NULL,
     stock_quantity INT NOT NULL DEFAULT 0,
     warning_threshold INT NOT NULL DEFAULT 0,
+    unit VARCHAR(10) NOT NULL DEFAULT '个',
     purchase_price DECIMAL(10,2) NOT NULL DEFAULT 0,
     selling_price DECIMAL(10,2) NOT NULL DEFAULT 0,
     status VARCHAR(20) NOT NULL DEFAULT 'ENABLED',
@@ -231,7 +236,7 @@ CREATE TABLE IF NOT EXISTS part_usage (
     unit_price DECIMAL(10,2) NOT NULL,
     technician_id BIGINT NOT NULL,
     approved_by BIGINT,
-    status VARCHAR(20) NOT NULL DEFAULT 'APPLIED',
+    status VARCHAR(20) NOT NULL DEFAULT 'PROPOSED',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     approved_at DATETIME,
     KEY idx_part_usage_work_order_id (work_order_id),

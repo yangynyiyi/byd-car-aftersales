@@ -59,6 +59,13 @@ public class AppointmentDao extends BaseJdbcDao {
         return appointments.stream().findFirst();
     }
 
+    public Optional<Appointment> findById(Long appointmentId) {
+        List<Appointment> appointments = jdbc().query("""
+                SELECT * FROM appointment WHERE appointment_id = ? AND deleted = 0
+                """, rowMapper, appointmentId);
+        return appointments.stream().findFirst();
+    }
+
     public List<Appointment> findByVin(String vin) {
         return jdbc().query("""
                 SELECT * FROM appointment WHERE vin = ? AND deleted = 0 ORDER BY appointment_time DESC

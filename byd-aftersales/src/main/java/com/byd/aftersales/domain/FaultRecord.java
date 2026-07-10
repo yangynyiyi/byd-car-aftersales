@@ -13,6 +13,10 @@ public class FaultRecord {
     private String faultDescription;
     private String faultLevel;
     private String status;
+    private String ownerName;
+    private String advisorName;
+    private String licensePlate;
+    private String model;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer deleted;
@@ -87,6 +91,38 @@ public class FaultRecord {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public String getAdvisorName() {
+        return advisorName;
+    }
+
+    public void setAdvisorName(String advisorName) {
+        this.advisorName = advisorName;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
 
     public LocalDateTime getCreatedAt() {

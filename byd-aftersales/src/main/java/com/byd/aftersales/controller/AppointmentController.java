@@ -32,24 +32,24 @@ public class AppointmentController {
     }
 
     @PutMapping("/{appointmentNo}/status")
-    public ApiResponse<Void> updateStatus(@PathVariable String appointmentNo, @RequestParam String status) {
+    public ApiResponse<Void> updateStatus(@PathVariable("appointmentNo") String appointmentNo, @RequestParam("status") String status) {
         appointmentService.updateStatus(appointmentNo, status);
         return ApiResponse.ok();
     }
 
     @DeleteMapping("/{appointmentNo}")
-    public ApiResponse<Void> delete(@PathVariable String appointmentNo) {
+    public ApiResponse<Void> delete(@PathVariable("appointmentNo") String appointmentNo) {
         appointmentService.delete(appointmentNo);
         return ApiResponse.ok();
     }
 
     @GetMapping("/{appointmentNo}")
-    public ApiResponse<Appointment> findByNo(@PathVariable String appointmentNo) {
+    public ApiResponse<Appointment> findByNo(@PathVariable("appointmentNo") String appointmentNo) {
         return ApiResponse.ok(appointmentService.findByNo(appointmentNo));
     }
 
     @GetMapping("/vehicle/{vin}")
-    public ApiResponse<List<Appointment>> findByVin(@PathVariable String vin) {
+    public ApiResponse<List<Appointment>> findByVin(@PathVariable("vin") String vin) {
         return ApiResponse.ok(appointmentService.findByVin(vin));
     }
 

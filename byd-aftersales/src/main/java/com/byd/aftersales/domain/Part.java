@@ -11,6 +11,7 @@ public class Part {
     private String category;
     private Integer stockQuantity;
     private Integer warningThreshold;
+    private String unit;
     private BigDecimal purchasePrice;
     private BigDecimal sellingPrice;
     private String status;
@@ -30,6 +31,8 @@ public class Part {
     public void setStockQuantity(Integer stockQuantity) { this.stockQuantity = stockQuantity; }
     public Integer getWarningThreshold() { return warningThreshold; }
     public void setWarningThreshold(Integer warningThreshold) { this.warningThreshold = warningThreshold; }
+    public String getUnit() { return unit; }
+    public void setUnit(String unit) { this.unit = unit; }
     public BigDecimal getPurchasePrice() { return purchasePrice; }
     public void setPurchasePrice(BigDecimal purchasePrice) { this.purchasePrice = purchasePrice; }
     public BigDecimal getSellingPrice() { return sellingPrice; }

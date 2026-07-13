@@ -32,30 +32,30 @@ public class FaultRecordController {
     }
 
     @PutMapping("/{faultNo}/status")
-    public ApiResponse<Void> updateStatus(@PathVariable String faultNo, @RequestParam String status) {
+    public ApiResponse<Void> updateStatus(@PathVariable("faultNo") String faultNo, @RequestParam("status") String status) {
         faultRecordService.updateStatus(faultNo, status);
         return ApiResponse.ok();
     }
 
     @PutMapping("/{faultNo}")
-    public ApiResponse<Void> update(@PathVariable String faultNo, @RequestBody FaultRecord record) {
+    public ApiResponse<Void> update(@PathVariable("faultNo") String faultNo, @RequestBody FaultRecord record) {
         faultRecordService.update(faultNo, record);
         return ApiResponse.ok();
     }
 
     @DeleteMapping("/{faultNo}")
-    public ApiResponse<Void> delete(@PathVariable String faultNo) {
+    public ApiResponse<Void> delete(@PathVariable("faultNo") String faultNo) {
         faultRecordService.delete(faultNo);
         return ApiResponse.ok();
     }
 
     @GetMapping("/{faultNo}")
-    public ApiResponse<FaultRecord> findByNo(@PathVariable String faultNo) {
+    public ApiResponse<FaultRecord> findByNo(@PathVariable("faultNo") String faultNo) {
         return ApiResponse.ok(faultRecordService.findByNo(faultNo));
     }
 
     @GetMapping("/vehicle/{vin}")
-    public ApiResponse<List<FaultRecord>> findByVin(@PathVariable String vin) {
+    public ApiResponse<List<FaultRecord>> findByVin(@PathVariable("vin") String vin) {
         return ApiResponse.ok(faultRecordService.findByVin(vin));
     }
 

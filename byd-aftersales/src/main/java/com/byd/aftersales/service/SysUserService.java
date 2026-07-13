@@ -152,7 +152,13 @@ public class SysUserService {
                 ? batteryModel.trim() : "Blade Battery");
         vehicle.setCurrentMileage(BigDecimal.ZERO);
         vehicle.setVehicleStatus("NORMAL");
-        vehicleService.create(vehicle);
+        Long defaultAdvisorId = sysUserDao.findAll().stream()
+                .filter(u -> "ADVISOR".equals(u.getRole()) && "ENABLED".equals(u.getStatus()))
+                .map(SysUser::getUserId)
+                .findFirst()
+                .orElseThrow(() -> new BusinessException("暂无可用顾问，请联系门店"));
+        vehicle.setAdvisorId(defaultAdvisorId);
+        vehicleService.create(vehicle, null);
 
         return login(user.getUsername(), request.getPassword());
     }

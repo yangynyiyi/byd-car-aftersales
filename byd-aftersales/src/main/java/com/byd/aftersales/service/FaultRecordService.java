@@ -5,8 +5,10 @@ import com.byd.aftersales.auth.AuthUser;
 import com.byd.aftersales.common.BusinessException;
 import com.byd.aftersales.common.IdGenerator;
 import com.byd.aftersales.dao.FaultRecordDao;
+import com.byd.aftersales.dao.AppointmentDao;
 import com.byd.aftersales.dao.VehicleDao;
 import com.byd.aftersales.domain.FaultRecord;
+import com.byd.aftersales.domain.Appointment;
 import com.byd.aftersales.domain.Vehicle;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +23,12 @@ public class FaultRecordService {
 
     private final FaultRecordDao faultRecordDao;
     private final VehicleDao vehicleDao;
+    private final AppointmentDao appointmentDao;
 
-    public FaultRecordService(FaultRecordDao faultRecordDao, VehicleDao vehicleDao) {
+    public FaultRecordService(FaultRecordDao faultRecordDao, VehicleDao vehicleDao, AppointmentDao appointmentDao) {
         this.faultRecordDao = faultRecordDao;
         this.vehicleDao = vehicleDao;
+        this.appointmentDao = appointmentDao;
     }
 
     public void create(FaultRecord record) {
@@ -40,6 +44,7 @@ public class FaultRecordService {
         Vehicle vehicle = vehicleDao.findByVin(record.getVin()).orElseThrow(() -> new BusinessException("车辆不存在"));
         fillActorIds(record, vehicle);
         validate(record);
+        validateAppointmentLink(record);
         faultRecordDao.insert(record);
     }
 
@@ -89,6 +94,23 @@ public class FaultRecordService {
 
     public List<FaultRecord> findAll() {
         return faultRecordDao.findAll();
+    }
+
+    private void validateAppointmentLink(FaultRecord record) {
+        if (record.getAppointmentId() == null) {
+            return;
+        }
+        Appointment appointment = appointmentDao.findById(record.getAppointmentId())
+                .orElseThrow(() -> new BusinessException("关联预约不存在"));
+        if (!appointment.getVin().equals(record.getVin())) {
+            throw new BusinessException("故障车辆与预约车辆不一致");
+        }
+        if (!"ARRIVED".equals(appointment.getStatus()) && !"COMPLETED".equals(appointment.getStatus())) {
+            throw new BusinessException("仅已到店或已完成的预约可登记故障");
+        }
+        if (faultRecordDao.findByAppointmentId(record.getAppointmentId()).isPresent()) {
+            throw new BusinessException("该预约已登记故障，请勿重复创建");
+        }
     }
 
     private void fillActorIds(FaultRecord record, Vehicle vehicle) {

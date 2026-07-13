@@ -25,12 +25,12 @@ public class BatteryHealthController {
     }
 
     @GetMapping
-    public ApiResponse<List<BatteryHealthRecord>> list(@RequestParam(required = false) String level) {
+    public ApiResponse<List<BatteryHealthRecord>> list(@RequestParam(value = "level", required = false) String level) {
         return ApiResponse.ok(batteryHealthService.list(level));
     }
 
     @GetMapping("/vehicle/{vin}")
-    public ApiResponse<List<BatteryHealthRecord>> listByVin(@PathVariable String vin) {
+    public ApiResponse<List<BatteryHealthRecord>> listByVin(@PathVariable("vin") String vin) {
         return ApiResponse.ok(batteryHealthService.listByVin(vin));
     }
 
@@ -40,7 +40,7 @@ public class BatteryHealthController {
     }
 
     @PostMapping("/{vin}/remind")
-    public ApiResponse<Void> remindOwner(@PathVariable String vin, @RequestBody Map<String, Long> body) {
+    public ApiResponse<Void> remindOwner(@PathVariable("vin") String vin, @RequestBody Map<String, Long> body) {
         batteryHealthService.remindOwner(vin, body.get("operatorId"));
         return ApiResponse.ok();
     }

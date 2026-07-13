@@ -29,27 +29,27 @@ public class SettlementController {
     }
 
     @GetMapping("/work-order/{workOrderId}")
-    public ApiResponse<Settlement> getByWorkOrder(@PathVariable Long workOrderId) {
+    public ApiResponse<Settlement> getByWorkOrder(@PathVariable("workOrderId") Long workOrderId) {
         return ApiResponse.ok(settlementService.getByWorkOrderId(workOrderId));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Settlement> getById(@PathVariable Long id) {
+    public ApiResponse<Settlement> getById(@PathVariable("id") Long id) {
         return ApiResponse.ok(settlementService.getById(id));
     }
 
     @PutMapping("/{id}/pay")
-    public ApiResponse<Settlement> pay(@PathVariable Long id) {
+    public ApiResponse<Settlement> pay(@PathVariable("id") Long id) {
         return ApiResponse.ok(settlementService.markPaid(id));
     }
 
     @PutMapping("/{id}/approve")
-    public ApiResponse<Settlement> approve(@PathVariable Long id, @RequestBody Map<String, Long> body) {
+    public ApiResponse<Settlement> approve(@PathVariable("id") Long id, @RequestBody Map<String, Long> body) {
         return ApiResponse.ok(settlementService.approve(id, body.get("operatorId")));
     }
 
     @PutMapping("/{id}/reject")
-    public ApiResponse<Settlement> reject(@PathVariable Long id, @RequestBody Map<String, Long> body) {
+    public ApiResponse<Settlement> reject(@PathVariable("id") Long id, @RequestBody Map<String, Long> body) {
         return ApiResponse.ok(settlementService.reject(id, body.get("operatorId")));
     }
 }

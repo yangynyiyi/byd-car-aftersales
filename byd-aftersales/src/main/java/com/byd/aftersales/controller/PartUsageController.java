@@ -33,24 +33,21 @@ public class PartUsageController {
 
     @GetMapping
     public ApiResponse<List<PartUsage>> list(
-            @RequestParam(required = false) Long workOrderId,
-            @RequestParam(required = false) String status) {
+            @RequestParam(value = "workOrderId", required = false) Long workOrderId,
+            @RequestParam(value = "status", required = false) String status) {
         if (workOrderId != null) {
             return ApiResponse.ok(partUsageService.listByWorkOrder(workOrderId));
-        }
-        if ("APPLIED".equals(status)) {
-            return ApiResponse.ok(partUsageService.listPending());
         }
         return ApiResponse.ok(partUsageService.listPending());
     }
 
     @PutMapping("/{id}/approve")
-    public ApiResponse<PartUsage> approve(@PathVariable Long id, @RequestBody Map<String, Long> body) {
+    public ApiResponse<PartUsage> approve(@PathVariable("id") Long id, @RequestBody Map<String, Long> body) {
         return ApiResponse.ok(partUsageService.approve(id, body.get("approvedBy")));
     }
 
     @PutMapping("/{id}/reject")
-    public ApiResponse<PartUsage> reject(@PathVariable Long id, @RequestBody Map<String, Long> body) {
+    public ApiResponse<PartUsage> reject(@PathVariable("id") Long id, @RequestBody Map<String, Long> body) {
         return ApiResponse.ok(partUsageService.reject(id, body.get("approvedBy")));
     }
 }

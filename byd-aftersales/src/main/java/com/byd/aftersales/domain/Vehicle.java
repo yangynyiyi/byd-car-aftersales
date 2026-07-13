@@ -8,6 +8,7 @@ public class Vehicle {
 
     private String vin;
     private Long ownerId;
+    private Long advisorId;
     private String licensePlate;
     private String model;
     private String batteryModel;
@@ -20,6 +21,7 @@ public class Vehicle {
     private String vehicleStatus;
     private String ownerName;
     private String ownerPhone;
+    private String advisorName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer deleted;
@@ -38,6 +40,14 @@ public class Vehicle {
 
     public void setOwnerId(Long ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public Long getAdvisorId() {
+        return advisorId;
+    }
+
+    public void setAdvisorId(Long advisorId) {
+        this.advisorId = advisorId;
     }
 
     public String getLicensePlate() {
@@ -134,6 +144,14 @@ public class Vehicle {
 
     public void setOwnerPhone(String ownerPhone) {
         this.ownerPhone = ownerPhone;
+    }
+
+    public String getAdvisorName() {
+        return advisorName;
+    }
+
+    public void setAdvisorName(String advisorName) {
+        this.advisorName = advisorName;
     }
 
     public LocalDateTime getCreatedAt() {

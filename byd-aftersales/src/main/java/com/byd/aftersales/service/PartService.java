@@ -31,8 +31,9 @@ public class PartService {
         part.setCategory(request.getCategory() != null ? request.getCategory() : "GENERAL");
         part.setStockQuantity(request.getStockQuantity() != null ? request.getStockQuantity() : 0);
         part.setWarningThreshold(request.getWarningThreshold() != null ? request.getWarningThreshold() : 10);
-        part.setPurchasePrice(request.getPurchasePrice());
-        part.setSellingPrice(request.getSellingPrice());
+        part.setUnit(request.getUnit() != null && !request.getUnit().isBlank() ? request.getUnit() : "个");
+        part.setPurchasePrice(request.getPurchasePrice() != null ? request.getPurchasePrice() : java.math.BigDecimal.ZERO);
+        part.setSellingPrice(request.getSellingPrice() != null ? request.getSellingPrice() : java.math.BigDecimal.ZERO);
         part.setStatus("ENABLED");
         Long id = partDao.insert(part);
         return partDao.findById(id).orElseThrow(() -> new BusinessException("备件创建失败"));
@@ -51,8 +52,9 @@ public class PartService {
         part.setPartName(request.getPartName());
         part.setCategory(request.getCategory());
         part.setWarningThreshold(request.getWarningThreshold());
-        part.setPurchasePrice(request.getPurchasePrice());
-        part.setSellingPrice(request.getSellingPrice());
+        part.setUnit(request.getUnit() != null && !request.getUnit().isBlank() ? request.getUnit() : part.getUnit());
+        part.setPurchasePrice(request.getPurchasePrice() != null ? request.getPurchasePrice() : part.getPurchasePrice());
+        part.setSellingPrice(request.getSellingPrice() != null ? request.getSellingPrice() : part.getSellingPrice());
         partDao.update(part);
         return partDao.findById(partId).orElseThrow(() -> new BusinessException("备件不存在"));
     }

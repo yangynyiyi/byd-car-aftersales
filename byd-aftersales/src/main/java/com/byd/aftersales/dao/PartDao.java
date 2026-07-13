@@ -25,6 +25,7 @@ public class PartDao extends BaseJdbcDao {
         p.setCategory(rs.getString("category"));
         p.setStockQuantity(rs.getInt("stock_quantity"));
         p.setWarningThreshold(rs.getInt("warning_threshold"));
+        p.setUnit(rs.getString("unit"));
         p.setPurchasePrice(rs.getBigDecimal("purchase_price"));
         p.setSellingPrice(rs.getBigDecimal("selling_price"));
         p.setStatus(rs.getString("status"));
@@ -43,9 +44,9 @@ public class PartDao extends BaseJdbcDao {
     public Long insert(Part part) {
         String sql = """
                 INSERT INTO part
-                    (part_no, part_name, category, stock_quantity, warning_threshold,
+                    (part_no, part_name, category, stock_quantity, warning_threshold, unit,
                      purchase_price, selling_price, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc().update(con -> {
@@ -55,9 +56,10 @@ public class PartDao extends BaseJdbcDao {
             ps.setString(3, part.getCategory());
             ps.setInt(4, part.getStockQuantity());
             ps.setInt(5, part.getWarningThreshold());
-            ps.setBigDecimal(6, part.getPurchasePrice());
-            ps.setBigDecimal(7, part.getSellingPrice());
-            ps.setString(8, part.getStatus() != null ? part.getStatus() : "ENABLED");
+            ps.setString(6, part.getUnit() != null ? part.getUnit() : "个");
+            ps.setBigDecimal(7, part.getPurchasePrice());
+            ps.setBigDecimal(8, part.getSellingPrice());
+            ps.setString(9, part.getStatus() != null ? part.getStatus() : "ENABLED");
             return ps;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
@@ -80,11 +82,11 @@ public class PartDao extends BaseJdbcDao {
     public int update(Part part) {
         return jdbc().update("""
                 UPDATE part
-                SET part_name = ?, category = ?, warning_threshold = ?,
+                SET part_name = ?, category = ?, warning_threshold = ?, unit = ?,
                     purchase_price = ?, selling_price = ?, status = ?
                 WHERE part_id = ? AND deleted = 0
                 """,
-                part.getPartName(), part.getCategory(), part.getWarningThreshold(),
+                part.getPartName(), part.getCategory(), part.getWarningThreshold(), part.getUnit(),
                 part.getPurchasePrice(), part.getSellingPrice(), part.getStatus(),
                 part.getPartId());
     }

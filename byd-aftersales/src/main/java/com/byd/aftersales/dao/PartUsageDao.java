@@ -88,6 +88,17 @@ public class PartUsageDao extends BaseJdbcDao {
                 rowMapper);
     }
 
+    public List<PartUsage> findAll() {
+        return jdbc().query("SELECT * FROM part_usage ORDER BY created_at DESC", rowMapper);
+    }
+
+    public long countByDate(java.time.LocalDate date) {
+        Long count = jdbc().queryForObject(
+                "SELECT COUNT(*) FROM part_usage WHERE DATE(created_at) = ?",
+                Long.class, date.toString());
+        return count == null ? 0 : count;
+    }
+
     public boolean existsPendingByWorkOrderAndPart(Long workOrderId, Long partId) {
         Integer count = jdbc().queryForObject("""
                 SELECT COUNT(*) FROM part_usage

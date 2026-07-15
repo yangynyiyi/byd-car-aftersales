@@ -63,6 +63,14 @@ public class PartUsageService {
         return partUsageDao.findPendingApproval();
     }
 
+    public List<PartUsage> listAll() {
+        return partUsageDao.findAll();
+    }
+
+    public long countTodayApplications() {
+        return partUsageDao.countByDate(java.time.LocalDate.now());
+    }
+
     public PartUsage approve(Long usageId, Long approvedBy) {
         if (approvedBy == null) {
             throw new BusinessException("操作人不能为空");

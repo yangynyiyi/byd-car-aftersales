@@ -10,10 +10,13 @@ public class WorkOrder {
     private Long faultId;
     private Long diagnosisId;
     private Long technicianId;
+    private LocalDateTime assignedAt;
     private String status;
     private BigDecimal laborCost;
     private String repairResult;
     private LocalDateTime startedAt;
+    private LocalDateTime partWaitingAt;
+    private LocalDateTime partsArrivedAt;
     private LocalDateTime finishedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -29,6 +32,8 @@ public class WorkOrder {
     public void setDiagnosisId(Long diagnosisId) { this.diagnosisId = diagnosisId; }
     public Long getTechnicianId() { return technicianId; }
     public void setTechnicianId(Long technicianId) { this.technicianId = technicianId; }
+    public LocalDateTime getAssignedAt() { return assignedAt; }
+    public void setAssignedAt(LocalDateTime assignedAt) { this.assignedAt = assignedAt; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     public BigDecimal getLaborCost() { return laborCost; }
@@ -37,6 +42,10 @@ public class WorkOrder {
     public void setRepairResult(String repairResult) { this.repairResult = repairResult; }
     public LocalDateTime getStartedAt() { return startedAt; }
     public void setStartedAt(LocalDateTime startedAt) { this.startedAt = startedAt; }
+    public LocalDateTime getPartWaitingAt() { return partWaitingAt; }
+    public void setPartWaitingAt(LocalDateTime partWaitingAt) { this.partWaitingAt = partWaitingAt; }
+    public LocalDateTime getPartsArrivedAt() { return partsArrivedAt; }
+    public void setPartsArrivedAt(LocalDateTime partsArrivedAt) { this.partsArrivedAt = partsArrivedAt; }
     public LocalDateTime getFinishedAt() { return finishedAt; }
     public void setFinishedAt(LocalDateTime finishedAt) { this.finishedAt = finishedAt; }
     public LocalDateTime getCreatedAt() { return createdAt; }

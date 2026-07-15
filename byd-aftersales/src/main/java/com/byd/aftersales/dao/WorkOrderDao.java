@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -26,11 +27,17 @@ public class WorkOrderDao extends BaseJdbcDao {
         wo.setDiagnosisId(rs.wasNull() ? null : diagId);
         long techId = rs.getLong("technician_id");
         wo.setTechnicianId(rs.wasNull() ? null : techId);
+        Timestamp assignedAt = rs.getTimestamp("assigned_at");
+        wo.setAssignedAt(assignedAt == null ? null : assignedAt.toLocalDateTime());
         wo.setStatus(rs.getString("status"));
         wo.setLaborCost(rs.getBigDecimal("labor_cost"));
         wo.setRepairResult(rs.getString("repair_result"));
         Timestamp startedAt = rs.getTimestamp("started_at");
         wo.setStartedAt(startedAt == null ? null : startedAt.toLocalDateTime());
+        Timestamp partWaitingAt = rs.getTimestamp("part_waiting_at");
+        wo.setPartWaitingAt(partWaitingAt == null ? null : partWaitingAt.toLocalDateTime());
+        Timestamp partsArrivedAt = rs.getTimestamp("parts_arrived_at");
+        wo.setPartsArrivedAt(partsArrivedAt == null ? null : partsArrivedAt.toLocalDateTime());
         Timestamp finishedAt = rs.getTimestamp("finished_at");
         wo.setFinishedAt(finishedAt == null ? null : finishedAt.toLocalDateTime());
         Timestamp createdAt = rs.getTimestamp("created_at");
@@ -48,8 +55,8 @@ public class WorkOrderDao extends BaseJdbcDao {
     public Long insert(WorkOrder wo) {
         String sql = """
                 INSERT INTO work_order
-                    (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost)
-                VALUES (?, ?, ?, ?, ?, ?)
+                    (work_order_no, fault_id, diagnosis_id, technician_id, assigned_at, status, labor_cost)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc().update(con -> {
@@ -63,11 +70,14 @@ public class WorkOrderDao extends BaseJdbcDao {
             }
             if (wo.getTechnicianId() == null) {
                 ps.setObject(4, null);
+                ps.setObject(5, null);
             } else {
                 ps.setLong(4, wo.getTechnicianId());
+                ps.setTimestamp(5, Timestamp.valueOf(
+                        wo.getAssignedAt() != null ? wo.getAssignedAt() : java.time.LocalDateTime.now()));
             }
-            ps.setString(5, wo.getStatus());
-            ps.setBigDecimal(6, wo.getLaborCost());
+            ps.setString(6, wo.getStatus());
+            ps.setBigDecimal(7, wo.getLaborCost());
             return ps;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
@@ -95,41 +105,50 @@ public class WorkOrderDao extends BaseJdbcDao {
         return count != null && count > 0;
     }
 
-    public int assignTechnician(Long workOrderId, Long technicianId) {
+    public int assignTechnician(Long workOrderId, Long technicianId, BigDecimal laborCost) {
         return jdbc().update("""
-                UPDATE work_order SET technician_id = ?, status = 'ASSIGNED'
+                UPDATE work_order
+                SET technician_id = ?, assigned_at = NOW(), status = 'ASSIGNED',
+                    labor_cost = ?, updated_at = NOW()
                 WHERE work_order_id = ? AND deleted = 0
-                  AND status NOT IN ('COMPLETED', 'CANCELLED')
-                """, technicianId, workOrderId);
+                """, technicianId, laborCost, workOrderId);
+    }
+
+    public int updateLaborCost(Long workOrderId, BigDecimal laborCost) {
+        return jdbc().update(
+                "UPDATE work_order SET labor_cost = ?, updated_at = NOW() WHERE work_order_id = ? AND deleted = 0",
+                laborCost, workOrderId);
     }
 
     public int markStarted(Long workOrderId) {
         return jdbc().update("""
-                UPDATE work_order SET status = 'IN_PROGRESS', started_at = NOW()
-                WHERE work_order_id = ? AND deleted = 0 AND status = 'ASSIGNED'
+                UPDATE work_order
+                SET status = 'IN_PROGRESS', started_at = NOW(), updated_at = NOW()
+                WHERE work_order_id = ? AND deleted = 0
                 """, workOrderId);
     }
 
-    public int resumeRepair(Long workOrderId) {
+    public int partsArrived(Long workOrderId) {
         return jdbc().update("""
-                UPDATE work_order SET status = 'IN_PROGRESS'
-                WHERE work_order_id = ? AND deleted = 0 AND status = 'PART_WAITING'
+                UPDATE work_order
+                SET status = 'IN_PROGRESS', parts_arrived_at = NOW(), updated_at = NOW()
+                WHERE work_order_id = ? AND deleted = 0
                 """, workOrderId);
     }
 
     public int markPartWaiting(Long workOrderId) {
         return jdbc().update("""
-                UPDATE work_order SET status = 'PART_WAITING'
-                WHERE work_order_id = ? AND deleted = 0 AND status = 'IN_PROGRESS'
+                UPDATE work_order
+                SET status = 'PART_WAITING', part_waiting_at = NOW(), updated_at = NOW()
+                WHERE work_order_id = ? AND deleted = 0
                 """, workOrderId);
     }
 
     public int complete(Long workOrderId, String repairResult) {
         return jdbc().update("""
                 UPDATE work_order
-                SET status = 'COMPLETED', repair_result = ?, finished_at = NOW()
+                SET status = 'COMPLETED', repair_result = ?, finished_at = NOW(), updated_at = NOW()
                 WHERE work_order_id = ? AND deleted = 0
-                  AND status IN ('IN_PROGRESS', 'PART_WAITING')
                 """, repairResult, workOrderId);
     }
 

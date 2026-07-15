@@ -72,6 +72,13 @@ public class SysUserDao extends BaseJdbcDao {
         return users.stream().findFirst();
     }
 
+    public Optional<SysUser> findOwnerByPhone(String phone) {
+        List<SysUser> users = jdbc().query(
+                "SELECT * FROM sys_user WHERE phone = ? AND role = 'OWNER' AND deleted = 0 LIMIT 1",
+                rowMapper, phone);
+        return users.stream().findFirst();
+    }
+
     public List<SysUser> findAll() {
         return jdbc().query("SELECT * FROM sys_user WHERE deleted = 0 ORDER BY user_id DESC", rowMapper);
     }

@@ -48,6 +48,19 @@ ON DUPLICATE KEY UPDATE
     status = VALUES(status), updated_at = CURRENT_TIMESTAMP;
 
 -- -----------------------------------------------------------------------------
+-- 1.1 技师默认工时费（派工时自动带入人工费）
+-- -----------------------------------------------------------------------------
+INSERT INTO technician_rate (technician_id, hourly_rate, daily_rate, status)
+SELECT u.user_id, 280.00, 350.00, 'ENABLED'
+FROM sys_user u WHERE u.username = 'tech001'
+  AND NOT EXISTS (SELECT 1 FROM technician_rate tr WHERE tr.technician_id = u.user_id);
+
+INSERT INTO technician_rate (technician_id, hourly_rate, daily_rate, status)
+SELECT u.user_id, 320.00, 400.00, 'ENABLED'
+FROM sys_user u WHERE u.username = 'tech002'
+  AND NOT EXISTS (SELECT 1 FROM technician_rate tr WHERE tr.technician_id = u.user_id);
+
+-- -----------------------------------------------------------------------------
 -- 2. 服务中心（3 家）
 -- -----------------------------------------------------------------------------
 INSERT INTO service_center (center_name, city, address, phone, status)
@@ -272,43 +285,43 @@ FROM fault_record f WHERE f.fault_no='FLT20260710008'
 -- -----------------------------------------------------------------------------
 -- 7. 维修工单（6 条：进行中 2 + 已完工 4）
 -- -----------------------------------------------------------------------------
-INSERT INTO work_order (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost, repair_result, started_at, finished_at)
+INSERT INTO work_order (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost, repair_result, created_at, assigned_at, started_at, finished_at)
 SELECT 'WO20260710001', f.fault_id, d.diagnosis_id, (SELECT user_id FROM sys_user WHERE username='tech001'),
-       'IN_PROGRESS', 300.00, NULL, DATE_ADD(NOW(), INTERVAL 30 MINUTE), NULL
+       'IN_PROGRESS', 300.00, NULL, DATE_SUB(NOW(), INTERVAL 26 HOUR), DATE_SUB(NOW(), INTERVAL 24 HOUR), DATE_SUB(NOW(), INTERVAL 2 HOUR), NULL
 FROM fault_record f JOIN agent_diagnosis d ON d.fault_id=f.fault_id
 WHERE f.fault_no='FLT20260710001'
   AND NOT EXISTS (SELECT 1 FROM work_order WHERE work_order_no='WO20260710001');
 
-INSERT INTO work_order (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost, repair_result, started_at, finished_at)
+INSERT INTO work_order (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost, repair_result, created_at, assigned_at, started_at, finished_at)
 SELECT 'WO20260710002', f.fault_id, d.diagnosis_id, (SELECT user_id FROM sys_user WHERE username='tech002'),
-       'PART_WAITING', 500.00, NULL, DATE_SUB(NOW(), INTERVAL 4 HOUR), NULL
+       'PART_WAITING', 500.00, NULL, DATE_SUB(NOW(), INTERVAL 28 HOUR), DATE_SUB(NOW(), INTERVAL 26 HOUR), DATE_SUB(NOW(), INTERVAL 4 HOUR), NULL
 FROM fault_record f JOIN agent_diagnosis d ON d.fault_id=f.fault_id
 WHERE f.fault_no='FLT20260710002'
   AND NOT EXISTS (SELECT 1 FROM work_order WHERE work_order_no='WO20260710002');
 
-INSERT INTO work_order (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost, repair_result, started_at, finished_at)
+INSERT INTO work_order (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost, repair_result, created_at, assigned_at, started_at, finished_at)
 SELECT 'WO20260710003', f.fault_id, d.diagnosis_id, (SELECT user_id FROM sys_user WHERE username='tech001'),
-       'COMPLETED', 280.00, '更换充电口温度传感器并清理充电接口，快充恢复正常', DATE_SUB(NOW(), INTERVAL 3 DAY), DATE_SUB(NOW(), INTERVAL 2 DAY)
+       'COMPLETED', 280.00, '更换充电口温度传感器并清理充电接口，快充恢复正常', DATE_SUB(NOW(), INTERVAL 4 DAY), DATE_SUB(NOW(), INTERVAL 84 HOUR), DATE_SUB(NOW(), INTERVAL 3 DAY), DATE_SUB(NOW(), INTERVAL 2 DAY)
 FROM fault_record f JOIN agent_diagnosis d ON d.fault_id=f.fault_id
 WHERE f.fault_no='FLT20260710003'
   AND NOT EXISTS (SELECT 1 FROM work_order WHERE work_order_no='WO20260710003');
 
-INSERT INTO work_order (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost, repair_result, started_at, finished_at)
+INSERT INTO work_order (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost, repair_result, created_at, assigned_at, started_at, finished_at)
 SELECT 'WO20260710004', f.fault_id, d.diagnosis_id, (SELECT user_id FROM sys_user WHERE username='tech002'),
-       'COMPLETED', 150.00, '清除偶发故障码并紧固低压线束', DATE_SUB(NOW(), INTERVAL 2 DAY), DATE_SUB(NOW(), INTERVAL 1 DAY)
+       'COMPLETED', 150.00, '清除偶发故障码并紧固低压线束', DATE_SUB(NOW(), INTERVAL 3 DAY), DATE_SUB(NOW(), INTERVAL 60 HOUR), DATE_SUB(NOW(), INTERVAL 2 DAY), DATE_SUB(NOW(), INTERVAL 1 DAY)
 FROM fault_record f JOIN agent_diagnosis d ON d.fault_id=f.fault_id
 WHERE f.fault_no='FLT20260710004'
   AND NOT EXISTS (SELECT 1 FROM work_order WHERE work_order_no='WO20260710004');
 
-INSERT INTO work_order (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost, repair_result, started_at, finished_at)
+INSERT INTO work_order (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost, repair_result, created_at, assigned_at, started_at, finished_at)
 SELECT 'WO20260710005', f.fault_id, NULL, (SELECT user_id FROM sys_user WHERE username='tech001'),
-       'COMPLETED', 200.00, '更换左前胎压传感器并做四轮换位', DATE_SUB(NOW(), INTERVAL 28 DAY), DATE_SUB(NOW(), INTERVAL 27 DAY)
+       'COMPLETED', 200.00, '更换左前胎压传感器并做四轮换位', DATE_SUB(NOW(), INTERVAL 29 DAY), DATE_SUB(NOW(), INTERVAL 684 HOUR), DATE_SUB(NOW(), INTERVAL 28 DAY), DATE_SUB(NOW(), INTERVAL 27 DAY)
 FROM fault_record f WHERE f.fault_no='FLT20260710005'
   AND NOT EXISTS (SELECT 1 FROM work_order WHERE work_order_no='WO20260710005');
 
-INSERT INTO work_order (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost, repair_result, started_at, finished_at)
+INSERT INTO work_order (work_order_no, fault_id, diagnosis_id, technician_id, status, labor_cost, repair_result, created_at, assigned_at, started_at, finished_at)
 SELECT 'WO20260710006', f.fault_id, NULL, (SELECT user_id FROM sys_user WHERE username='tech002'),
-       'COMPLETED', 180.00, '完成半年保养、更换空调滤芯', DATE_SUB(NOW(), INTERVAL 12 DAY), DATE_SUB(NOW(), INTERVAL 11 DAY)
+       'COMPLETED', 180.00, '完成半年保养、更换空调滤芯', DATE_SUB(NOW(), INTERVAL 13 DAY), DATE_SUB(NOW(), INTERVAL 300 HOUR), DATE_SUB(NOW(), INTERVAL 12 DAY), DATE_SUB(NOW(), INTERVAL 11 DAY)
 FROM fault_record f WHERE f.fault_no='FLT20260710006'
   AND NOT EXISTS (SELECT 1 FROM work_order WHERE work_order_no='WO20260710006');
 
@@ -336,62 +349,72 @@ ON DUPLICATE KEY UPDATE
 -- -----------------------------------------------------------------------------
 -- 9. 备件领用（覆盖 PROPOSED / APPLIED / APPROVED / USED / REJECTED）
 -- -----------------------------------------------------------------------------
-INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, approved_at)
-SELECT w.work_order_id, p.part_id, 1, p.selling_price, w.technician_id, NULL, 'PROPOSED', NULL
+-- 注：created_at/approved_at 均相对所属工单的 started_at 偏移，避免脱离工单自身时间线（早于创建/晚于完工）
+INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, created_at, approved_at)
+SELECT w.work_order_id, p.part_id, 1, p.selling_price, w.technician_id, NULL, 'PROPOSED',
+       DATE_ADD(w.started_at, INTERVAL 20 MINUTE), NULL
 FROM work_order w JOIN part p ON p.part_no='P-OIL-001'
 WHERE w.work_order_no='WO20260710001'
   AND NOT EXISTS (SELECT 1 FROM part_usage u WHERE u.work_order_id=w.work_order_id AND u.part_id=p.part_id AND u.status='PROPOSED');
 
-INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, approved_at)
-SELECT w.work_order_id, p.part_id, 1, p.selling_price, w.technician_id, NULL, 'PROPOSED', NULL
+INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, created_at, approved_at)
+SELECT w.work_order_id, p.part_id, 1, p.selling_price, w.technician_id, NULL, 'PROPOSED',
+       DATE_ADD(w.started_at, INTERVAL 35 MINUTE), NULL
 FROM work_order w JOIN part p ON p.part_no='P-BRK-001'
 WHERE w.work_order_no='WO20260710001'
   AND NOT EXISTS (SELECT 1 FROM part_usage u WHERE u.work_order_id=w.work_order_id AND u.part_id=p.part_id AND u.status='PROPOSED');
 
-INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, approved_at)
-SELECT w.work_order_id, p.part_id, 1, p.selling_price, w.technician_id, NULL, 'APPLIED', NULL
+INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, created_at, approved_at)
+SELECT w.work_order_id, p.part_id, 1, p.selling_price, w.technician_id, NULL, 'APPLIED',
+       DATE_ADD(w.started_at, INTERVAL 20 MINUTE), NULL
 FROM work_order w JOIN part p ON p.part_no='P-HV-001'
 WHERE w.work_order_no='WO20260710002'
   AND NOT EXISTS (SELECT 1 FROM part_usage u WHERE u.work_order_id=w.work_order_id AND u.part_id=p.part_id);
 
-INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, approved_at)
+INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, created_at, approved_at)
 SELECT w.work_order_id, p.part_id, 1, p.selling_price, w.technician_id,
-       (SELECT user_id FROM sys_user WHERE username='part001'), 'REJECTED', DATE_SUB(NOW(), INTERVAL 3 HOUR)
+       (SELECT user_id FROM sys_user WHERE username='part001'), 'REJECTED',
+       DATE_ADD(w.started_at, INTERVAL 40 MINUTE), DATE_ADD(w.started_at, INTERVAL 100 MINUTE)
 FROM work_order w JOIN part p ON p.part_no='P-BMS-001'
 WHERE w.work_order_no='WO20260710002'
   AND NOT EXISTS (SELECT 1 FROM part_usage u WHERE u.work_order_id=w.work_order_id AND u.part_id=p.part_id);
 
-INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, approved_at)
+INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, created_at, approved_at)
 SELECT w.work_order_id, p.part_id, 1, p.selling_price, w.technician_id,
-       (SELECT user_id FROM sys_user WHERE username='part001'), 'USED', DATE_SUB(NOW(), INTERVAL 2 DAY)
+       (SELECT user_id FROM sys_user WHERE username='part001'), 'USED',
+       DATE_ADD(w.started_at, INTERVAL 2 HOUR), DATE_ADD(w.started_at, INTERVAL 3 HOUR)
 FROM work_order w JOIN part p ON p.part_no='P-CHG-001'
 WHERE w.work_order_no='WO20260710003'
   AND NOT EXISTS (SELECT 1 FROM part_usage u WHERE u.work_order_id=w.work_order_id AND u.part_id=p.part_id);
 
-INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, approved_at)
+INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, created_at, approved_at)
 SELECT w.work_order_id, p.part_id, 1, p.selling_price, w.technician_id,
-       (SELECT user_id FROM sys_user WHERE username='part001'), 'USED', DATE_SUB(NOW(), INTERVAL 1 DAY)
+       (SELECT user_id FROM sys_user WHERE username='part001'), 'USED',
+       DATE_ADD(w.started_at, INTERVAL 2 HOUR), DATE_ADD(w.started_at, INTERVAL 3 HOUR)
 FROM work_order w JOIN part p ON p.part_no='P-CBL-001'
 WHERE w.work_order_no='WO20260710004'
   AND NOT EXISTS (SELECT 1 FROM part_usage u WHERE u.work_order_id=w.work_order_id AND u.part_id=p.part_id);
 
-INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, approved_at)
+INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, created_at, approved_at)
 SELECT w.work_order_id, p.part_id, 1, p.selling_price, w.technician_id,
-       (SELECT user_id FROM sys_user WHERE username='part001'), 'USED', DATE_SUB(NOW(), INTERVAL 27 DAY)
+       (SELECT user_id FROM sys_user WHERE username='part001'), 'USED',
+       DATE_ADD(w.started_at, INTERVAL 2 HOUR), DATE_ADD(w.started_at, INTERVAL 3 HOUR)
 FROM work_order w JOIN part p ON p.part_no='P-TIR-001'
 WHERE w.work_order_no='WO20260710005'
   AND NOT EXISTS (SELECT 1 FROM part_usage u WHERE u.work_order_id=w.work_order_id AND u.part_id=p.part_id);
 
-INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, approved_at)
+INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, created_at, approved_at)
 SELECT w.work_order_id, p.part_id, 1, p.selling_price, w.technician_id,
-       (SELECT user_id FROM sys_user WHERE username='part001'), 'USED', DATE_SUB(NOW(), INTERVAL 11 DAY)
+       (SELECT user_id FROM sys_user WHERE username='part001'), 'USED',
+       DATE_ADD(w.started_at, INTERVAL 2 HOUR), DATE_ADD(w.started_at, INTERVAL 3 HOUR)
 FROM work_order w JOIN part p ON p.part_no='P-FLT-001'
 WHERE w.work_order_no='WO20260710006'
   AND NOT EXISTS (SELECT 1 FROM part_usage u WHERE u.work_order_id=w.work_order_id AND u.part_id=p.part_id);
 
-INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, approved_at)
+INSERT INTO part_usage (work_order_id, part_id, quantity, unit_price, technician_id, approved_by, status, created_at, approved_at)
 SELECT w.work_order_id, p.part_id, 2, p.selling_price, w.technician_id,
-       (SELECT user_id FROM sys_user WHERE username='part001'), 'USED', DATE_SUB(NOW(), INTERVAL 11 DAY)
+       (SELECT user_id FROM sys_user WHERE username='part001'), 'USED',
+       DATE_ADD(w.started_at, INTERVAL 150 MINUTE), DATE_ADD(w.started_at, INTERVAL 210 MINUTE)
 FROM work_order w JOIN part p ON p.part_no='P-OIL-001'
 WHERE w.work_order_no='WO20260710006'
   AND NOT EXISTS (SELECT 1 FROM part_usage u WHERE u.work_order_id=w.work_order_id AND u.part_id=p.part_id AND u.status='USED');
@@ -442,7 +465,19 @@ SELECT v.vin, v.soh, v.cycles, v.max_t, v.min_t, v.vdiff, v.wlevel, v.dtime FROM
     SELECT 'LC0CE4DB7N0000006', 69.00, 850, 55.5, 17.5, 0.135, 'DANGER',  DATE_SUB(NOW(), INTERVAL 30 DAY) UNION ALL
     SELECT 'LC0CE4DB7N0000006', 66.50, 880, 57.2, 17.6, 0.142, 'DANGER',  DATE_SUB(NOW(), INTERVAL 1 DAY)  UNION ALL
     SELECT 'LC0CE4DB7N0000007', 91.00, 220, 36.0, 20.5, 0.030, 'NORMAL',  DATE_SUB(NOW(), INTERVAL 40 DAY) UNION ALL
-    SELECT 'LC0CE4DB7N0000007', 88.50, 245, 38.5, 20.0, 0.042, 'NORMAL',  DATE_SUB(NOW(), INTERVAL 10 DAY)
+    SELECT 'LC0CE4DB7N0000007', 88.50, 245, 38.5, 20.0, 0.042, 'NORMAL',  DATE_SUB(NOW(), INTERVAL 10 DAY) UNION ALL
+    SELECT 'LC0CE4DB7N0000003', 93.50, 120, 35.5, 21.0, 0.028, 'NORMAL',  DATE_SUB(NOW(), INTERVAL 50 DAY) UNION ALL
+    SELECT 'LC0CE4DB7N0000003', 91.80, 145, 36.2, 20.8, 0.033, 'NORMAL',  DATE_SUB(NOW(), INTERVAL 5 DAY)  UNION ALL
+    SELECT 'LC0CE4DB7N0000004', 74.00, 610, 46.5, 19.0, 0.098, 'WARNING', DATE_SUB(NOW(), INTERVAL 40 DAY) UNION ALL
+    SELECT 'LC0CE4DB7N0000004', 68.50, 640, 49.8, 18.7, 0.112, 'DANGER',  DATE_SUB(NOW(), INTERVAL 4 DAY)  UNION ALL
+    SELECT 'LC0CE4DB7N0000005', 97.80, 60,  33.0, 22.0, 0.015, 'NORMAL',  DATE_SUB(NOW(), INTERVAL 20 DAY) UNION ALL
+    SELECT 'LC0CE4DB7N0000005', 96.50, 78,  34.0, 21.5, 0.018, 'NORMAL',  DATE_SUB(NOW(), INTERVAL 2 DAY)  UNION ALL
+    SELECT 'LC0CE4DB7N0000008', 95.20, 90,  34.5, 21.2, 0.020, 'NORMAL',  DATE_SUB(NOW(), INTERVAL 15 DAY) UNION ALL
+    SELECT 'LC0CE4DB7N0000008', 94.00, 105, 35.0, 21.0, 0.024, 'NORMAL',  DATE_SUB(NOW(), INTERVAL 1 DAY)  UNION ALL
+    SELECT 'LC0CE4DB7N0000009', 87.60, 350, 41.5, 19.5, 0.068, 'NORMAL',  DATE_SUB(NOW(), INTERVAL 35 DAY) UNION ALL
+    SELECT 'LC0CE4DB7N0000009', 85.30, 375, 42.8, 19.2, 0.075, 'WARNING', DATE_SUB(NOW(), INTERVAL 3 DAY)  UNION ALL
+    SELECT 'LC0CE4DB7N0000010', 82.40, 290, 44.0, 19.8, 0.088, 'WARNING', DATE_SUB(NOW(), INTERVAL 25 DAY) UNION ALL
+    SELECT 'LC0CE4DB7N0000010', 80.10, 310, 44.8, 19.6, 0.094, 'WARNING', DATE_SUB(NOW(), INTERVAL 6 DAY)
 ) v
 WHERE NOT EXISTS (
     SELECT 1 FROM battery_health_record b WHERE b.vin=v.vin AND b.detect_time=v.dtime
@@ -460,7 +495,9 @@ SELECT v.vin, v.score, v.lvl, v.summary, v.suggestion, DATE_SUB(NOW(), INTERVAL 
     SELECT 'LC0CE4DB7N0000005', 97, 'NORMAL',  '新车健康状态优秀', '保持常规使用习惯' UNION ALL
     SELECT 'LC0CE4DB7N0000006', 58, 'DANGER',  '高压电池均需紧急处理', '立即拖车入站检测' UNION ALL
     SELECT 'LC0CE4DB7N0000007', 85, 'NORMAL',  '快充变慢已修复，当前状态良好', '继续观察充电表现' UNION ALL
-    SELECT 'LC0CE4DB7N0000009', 88, 'NORMAL',  '半年保养后状态稳定', '下次保养前无需额外处理'
+    SELECT 'LC0CE4DB7N0000008', 92, 'NORMAL',  '新车状态良好，各项指标正常', '保持常规使用习惯' UNION ALL
+    SELECT 'LC0CE4DB7N0000009', 88, 'NORMAL',  '半年保养后状态稳定', '下次保养前无需额外处理' UNION ALL
+    SELECT 'LC0CE4DB7N0000010', 75, 'WARNING', '电池压差偏高，建议复检', '预约充电系统检测'
 ) v
 WHERE NOT EXISTS (
     SELECT 1 FROM vehicle_health_snapshot s WHERE s.vin=v.vin AND s.detect_time=DATE_SUB(NOW(), INTERVAL 1 DAY)

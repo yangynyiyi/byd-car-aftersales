@@ -194,10 +194,13 @@ CREATE TABLE IF NOT EXISTS work_order (
     fault_id BIGINT NOT NULL,
     diagnosis_id BIGINT,
     technician_id BIGINT,
+    assigned_at DATETIME,
     status VARCHAR(30) NOT NULL DEFAULT 'CREATED',
     labor_cost DECIMAL(10,2) NOT NULL DEFAULT 0,
     repair_result TEXT,
     started_at DATETIME,
+    part_waiting_at DATETIME,
+    parts_arrived_at DATETIME,
     finished_at DATETIME,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -207,6 +210,19 @@ CREATE TABLE IF NOT EXISTS work_order (
     CONSTRAINT fk_work_order_fault FOREIGN KEY (fault_id) REFERENCES fault_record (fault_id),
     CONSTRAINT fk_work_order_diagnosis FOREIGN KEY (diagnosis_id) REFERENCES agent_diagnosis (diagnosis_id),
     CONSTRAINT fk_work_order_technician FOREIGN KEY (technician_id) REFERENCES sys_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 技师工时费配置：派工时自动带入默认人工费。
+CREATE TABLE IF NOT EXISTS technician_rate (
+    rate_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    technician_id BIGINT NOT NULL,
+    hourly_rate DECIMAL(10,2) NOT NULL DEFAULT 0,
+    daily_rate DECIMAL(10,2) NOT NULL DEFAULT 0,
+    status VARCHAR(20) NOT NULL DEFAULT 'ENABLED',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_technician_rate (technician_id),
+    CONSTRAINT fk_technician_rate_user FOREIGN KEY (technician_id) REFERENCES sys_user (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 备件表：记录维修备件库存和价格信息。

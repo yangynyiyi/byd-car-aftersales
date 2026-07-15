@@ -61,6 +61,19 @@ public class WorkOrderCompletionService {
             throw new BusinessException("当前工单状态不允许完工，status=" + workOrder.getStatus());
         }
 
+        // 必须先按 APPROVED 备件做质保校验，再 markUsed；否则质保估算会丢失备件费。
+        if (warrantyAmount == null) {
+            warrantyAmount = BigDecimal.ZERO;
+        }
+        var warrantyEstimate = warrantyService.estimateForWorkOrder(workOrderId);
+        if (warrantyAmount.compareTo(warrantyEstimate.getGrossAmount()) > 0) {
+            throw new BusinessException("质保减免不能超过费用合计 ¥" + warrantyEstimate.getGrossAmount());
+        }
+        if (warrantyAmount.compareTo(warrantyEstimate.getSuggestedWarrantyAmount()) > 0) {
+            throw new BusinessException("质保减免超过系统建议上限 ¥"
+                    + warrantyEstimate.getSuggestedWarrantyAmount() + "，请核对三包条件");
+        }
+
         List<PartUsage> approvedUsages = partUsageDao.findApprovedByWorkOrderId(workOrderId);
         BigDecimal partAmount = BigDecimal.ZERO;
 
@@ -82,17 +95,6 @@ public class WorkOrderCompletionService {
             });
         }
 
-        if (warrantyAmount == null) {
-            warrantyAmount = BigDecimal.ZERO;
-        }
-        var warrantyEstimate = warrantyService.estimateForWorkOrder(workOrderId);
-        if (warrantyAmount.compareTo(warrantyEstimate.getGrossAmount()) > 0) {
-            throw new BusinessException("质保减免不能超过费用合计 ¥" + warrantyEstimate.getGrossAmount());
-        }
-        if (warrantyAmount.compareTo(warrantyEstimate.getSuggestedWarrantyAmount()) > 0) {
-            throw new BusinessException("质保减免超过系统建议上限 ¥"
-                    + warrantyEstimate.getSuggestedWarrantyAmount() + "，请核对三包条件");
-        }
         BigDecimal totalAmount = workOrder.getLaborCost()
                 .add(partAmount)
                 .subtract(warrantyAmount);

@@ -34,11 +34,19 @@ public class PartUsageController {
     @GetMapping
     public ApiResponse<List<PartUsage>> list(
             @RequestParam(value = "workOrderId", required = false) Long workOrderId,
-            @RequestParam(value = "status", required = false) String status) {
+            @RequestParam(value = "scope", required = false) String scope) {
         if (workOrderId != null) {
             return ApiResponse.ok(partUsageService.listByWorkOrder(workOrderId));
         }
+        if ("all".equalsIgnoreCase(scope)) {
+            return ApiResponse.ok(partUsageService.listAll());
+        }
         return ApiResponse.ok(partUsageService.listPending());
+    }
+
+    @GetMapping("/stats/today")
+    public ApiResponse<Map<String, Long>> todayStats() {
+        return ApiResponse.ok(Map.of("todayApplications", partUsageService.countTodayApplications()));
     }
 
     @PutMapping("/{id}/approve")

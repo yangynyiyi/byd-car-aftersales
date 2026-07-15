@@ -73,9 +73,20 @@ public class WorkOrderController {
         return ApiResponse.ok(workOrderService.startRepair(id));
     }
 
+    @PutMapping("/{id}/parts-arrived")
+    public ApiResponse<WorkOrder> partsArrived(@PathVariable("id") Long id) {
+        return ApiResponse.ok(workOrderService.partsArrived(id));
+    }
+
     @PutMapping("/{id}/part-waiting")
     public ApiResponse<WorkOrder> markPartWaiting(@PathVariable("id") Long id) {
         return ApiResponse.ok(workOrderService.markPartWaiting(id));
+    }
+
+    @PutMapping("/{id}/labor-cost")
+    public ApiResponse<WorkOrder> updateLaborCost(@PathVariable("id") Long id,
+                                                  @RequestBody Map<String, BigDecimal> body) {
+        return ApiResponse.ok(workOrderService.updateLaborCost(id, body.get("laborCost")));
     }
 
     @GetMapping("/{id}/warranty-estimate")

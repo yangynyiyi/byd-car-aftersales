@@ -63,6 +63,14 @@ public class PartUsageService {
         return partUsageDao.findPendingApproval();
     }
 
+    public List<PartUsage> listAll() {
+        return partUsageDao.findAll();
+    }
+
+    public long countTodayApplications() {
+        return partUsageDao.countByDate(java.time.LocalDate.now());
+    }
+
     public PartUsage approve(Long usageId, Long approvedBy) {
         PartUsage usage = getPendingApprovalOrThrow(usageId);
         Part part = partDao.findById(usage.getPartId())

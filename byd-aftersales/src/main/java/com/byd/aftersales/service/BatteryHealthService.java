@@ -44,9 +44,7 @@ public class BatteryHealthService {
             throw new BusinessException("检测时间不能为空");
         }
         vehicleDao.findByVin(record.getVin()).orElseThrow(() -> new BusinessException("车辆不存在"));
-        if (record.getWarningLevel() == null || record.getWarningLevel().isBlank()) {
-            record.setWarningLevel(resolveWarningLevel(record.getSoh()));
-        }
+        record.setWarningLevel(resolveWarningLevel(record));
         Long id = batteryHealthDao.insert(record);
         BatteryHealthRecord saved = batteryHealthDao.findById(id)
                 .orElseThrow(() -> new BusinessException("电池记录保存失败"));
@@ -83,11 +81,18 @@ public class BatteryHealthService {
         reminderService.createBatteryReminder(vin, vehicle.getOwnerId(), latest.getWarningLevel(), detail);
     }
 
-    private String resolveWarningLevel(BigDecimal soh) {
-        if (soh.compareTo(new BigDecimal("70")) < 0) {
+    private String resolveWarningLevel(BatteryHealthRecord record) {
+        BigDecimal soh = record.getSoh();
+        BigDecimal maxTemp = record.getMaxTemperature() != null ? record.getMaxTemperature() : BigDecimal.ZERO;
+        BigDecimal voltageDiff = record.getVoltageDiff() != null ? record.getVoltageDiff() : BigDecimal.ZERO;
+        if (soh.compareTo(new BigDecimal("70")) < 0
+                || maxTemp.compareTo(new BigDecimal("60")) > 0
+                || voltageDiff.compareTo(new BigDecimal("0.2")) > 0) {
             return "DANGER";
         }
-        if (soh.compareTo(new BigDecimal("80")) < 0) {
+        if (soh.compareTo(new BigDecimal("80")) < 0
+                || maxTemp.compareTo(new BigDecimal("50")) > 0
+                || voltageDiff.compareTo(new BigDecimal("0.1")) > 0) {
             return "WARNING";
         }
         return "NORMAL";

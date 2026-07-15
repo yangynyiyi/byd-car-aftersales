@@ -43,6 +43,9 @@ public class WorkOrderService {
         if ("CLOSED".equals(fault.getStatus())) {
             throw new BusinessException("该故障已关闭，不能生成工单");
         }
+        if (request.getLaborCost() != null && request.getLaborCost().compareTo(BigDecimal.ZERO) < 0) {
+            throw new BusinessException("工时费不能为负数");
+        }
 
         WorkOrder wo = new WorkOrder();
         wo.setWorkOrderNo(IdGenerator.generate("WO"));

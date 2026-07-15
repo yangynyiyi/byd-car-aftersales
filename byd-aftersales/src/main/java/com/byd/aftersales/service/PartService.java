@@ -25,6 +25,15 @@ public class PartService {
         if (request.getPartName() == null || request.getPartName().isBlank()) {
             throw new BusinessException("备件名称不能为空");
         }
+        if (request.getStockQuantity() != null && request.getStockQuantity() < 0) {
+            throw new BusinessException("初始库存不能为负数");
+        }
+        if (request.getPurchasePrice() != null && request.getPurchasePrice().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new BusinessException("采购价不能为负数");
+        }
+        if (request.getSellingPrice() != null && request.getSellingPrice().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new BusinessException("销售价不能为负数");
+        }
         Part part = new Part();
         part.setPartNo(request.getPartNo());
         part.setPartName(request.getPartName());

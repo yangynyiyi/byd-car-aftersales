@@ -12,7 +12,7 @@ public final class IdGenerator {
     }
 
     public static String generate(String prefix) {
-        int random = ThreadLocalRandom.current().nextInt(1000, 10000);
+        int random = ThreadLocalRandom.current().nextInt(100000, 1000000);
         return prefix + LocalDateTime.now().format(FORMATTER) + random;
     }
 }

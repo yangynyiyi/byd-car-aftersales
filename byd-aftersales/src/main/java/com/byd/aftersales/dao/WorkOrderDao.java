@@ -124,6 +124,7 @@ public class WorkOrderDao extends BaseJdbcDao {
                 UPDATE work_order
                 SET status = 'COMPLETED', repair_result = ?, finished_at = NOW()
                 WHERE work_order_id = ? AND deleted = 0
+                  AND status IN ('IN_PROGRESS', 'PART_WAITING')
                 """, repairResult, workOrderId);
     }
 

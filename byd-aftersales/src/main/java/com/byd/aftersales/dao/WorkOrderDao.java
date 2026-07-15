@@ -111,20 +111,23 @@ public class WorkOrderDao extends BaseJdbcDao {
                 SET technician_id = ?, assigned_at = NOW(), status = 'ASSIGNED',
                     labor_cost = ?, updated_at = NOW()
                 WHERE work_order_id = ? AND deleted = 0
+                  AND status NOT IN ('COMPLETED', 'CANCELLED')
                 """, technicianId, laborCost, workOrderId);
     }
 
     public int updateLaborCost(Long workOrderId, BigDecimal laborCost) {
-        return jdbc().update(
-                "UPDATE work_order SET labor_cost = ?, updated_at = NOW() WHERE work_order_id = ? AND deleted = 0",
-                laborCost, workOrderId);
+        return jdbc().update("""
+                UPDATE work_order SET labor_cost = ?, updated_at = NOW()
+                WHERE work_order_id = ? AND deleted = 0
+                  AND status NOT IN ('COMPLETED', 'CANCELLED')
+                """, laborCost, workOrderId);
     }
 
     public int markStarted(Long workOrderId) {
         return jdbc().update("""
                 UPDATE work_order
                 SET status = 'IN_PROGRESS', started_at = NOW(), updated_at = NOW()
-                WHERE work_order_id = ? AND deleted = 0
+                WHERE work_order_id = ? AND deleted = 0 AND status = 'ASSIGNED'
                 """, workOrderId);
     }
 
@@ -132,7 +135,7 @@ public class WorkOrderDao extends BaseJdbcDao {
         return jdbc().update("""
                 UPDATE work_order
                 SET status = 'IN_PROGRESS', parts_arrived_at = NOW(), updated_at = NOW()
-                WHERE work_order_id = ? AND deleted = 0
+                WHERE work_order_id = ? AND deleted = 0 AND status = 'PART_WAITING'
                 """, workOrderId);
     }
 
@@ -140,7 +143,7 @@ public class WorkOrderDao extends BaseJdbcDao {
         return jdbc().update("""
                 UPDATE work_order
                 SET status = 'PART_WAITING', part_waiting_at = NOW(), updated_at = NOW()
-                WHERE work_order_id = ? AND deleted = 0
+                WHERE work_order_id = ? AND deleted = 0 AND status = 'IN_PROGRESS'
                 """, workOrderId);
     }
 
@@ -149,6 +152,7 @@ public class WorkOrderDao extends BaseJdbcDao {
                 UPDATE work_order
                 SET status = 'COMPLETED', repair_result = ?, finished_at = NOW(), updated_at = NOW()
                 WHERE work_order_id = ? AND deleted = 0
+                  AND status IN ('IN_PROGRESS', 'PART_WAITING')
                 """, repairResult, workOrderId);
     }
 

@@ -65,6 +65,9 @@ public class WorkOrderCompletionService {
         if (warrantyAmount == null) {
             warrantyAmount = BigDecimal.ZERO;
         }
+        if (warrantyAmount.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BusinessException("质保减免金额不能为负数");
+        }
         var warrantyEstimate = warrantyService.estimateForWorkOrder(workOrderId);
         if (warrantyAmount.compareTo(warrantyEstimate.getGrossAmount()) > 0) {
             throw new BusinessException("质保减免不能超过费用合计 ¥" + warrantyEstimate.getGrossAmount());
@@ -84,7 +87,9 @@ public class WorkOrderCompletionService {
                 String name = p != null ? p.getPartName() : "partId=" + usage.getPartId();
                 throw new BusinessException("备件【" + name + "】库存不足，扣减失败");
             }
-            partUsageDao.markUsed(usage.getUsageId());
+            if (partUsageDao.markUsed(usage.getUsageId()) == 0) {
+                throw new BusinessException("备件领用记录状态更新失败，可能已被处理");
+            }
             partAmount = partAmount.add(
                     usage.getUnitPrice().multiply(BigDecimal.valueOf(usage.getQuantity())));
             partDao.findById(usage.getPartId()).ifPresent(latest -> {
@@ -111,7 +116,9 @@ public class WorkOrderCompletionService {
         settlement.setTotalAmount(totalAmount);
 
         Long settlementId = settlementDao.insert(settlement);
-        workOrderDao.complete(workOrderId, repairResult);
+        if (workOrderDao.complete(workOrderId, repairResult) == 0) {
+            throw new BusinessException("工单状态已变化，完工失败，请刷新后重试");
+        }
         updateVehicleRepairRecord(workOrder, workOrderId, operatorId);
 
         String detail = String.format(
@@ -129,7 +136,9 @@ public class WorkOrderCompletionService {
         }
         FaultRecord fault = faultRecordDao.findById(workOrder.getFaultId())
                 .orElseThrow(() -> new BusinessException("关联故障记录不存在"));
-        faultRecordDao.updateStatus(fault.getFaultNo(), "CLOSED");
+        if (faultRecordDao.updateStatus(fault.getFaultNo(), "CLOSED") == 0) {
+            throw new BusinessException("关闭故障单失败");
+        }
 
         if (vehicleDao.findByVin(fault.getVin()).isEmpty()) {
             throw new BusinessException("关联车辆不存在");

@@ -64,6 +64,9 @@ public class PartUsageService {
     }
 
     public PartUsage approve(Long usageId, Long approvedBy) {
+        if (approvedBy == null) {
+            throw new BusinessException("操作人不能为空");
+        }
         PartUsage usage = getPendingApprovalOrThrow(usageId);
         Part part = partDao.findById(usage.getPartId())
                 .orElseThrow(() -> new BusinessException("备件不存在"));
@@ -78,6 +81,9 @@ public class PartUsageService {
     }
 
     public PartUsage reject(Long usageId, Long approvedBy) {
+        if (approvedBy == null) {
+            throw new BusinessException("操作人不能为空");
+        }
         getPendingApprovalOrThrow(usageId);
         if (partUsageDao.reject(usageId, approvedBy) == 0) {
             throw new BusinessException("操作失败，请刷新后重试");

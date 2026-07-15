@@ -96,27 +96,32 @@ public class WorkOrderDao extends BaseJdbcDao {
     }
 
     public int assignTechnician(Long workOrderId, Long technicianId) {
-        return jdbc().update(
-                "UPDATE work_order SET technician_id = ?, status = 'ASSIGNED' WHERE work_order_id = ? AND deleted = 0",
-                technicianId, workOrderId);
+        return jdbc().update("""
+                UPDATE work_order SET technician_id = ?, status = 'ASSIGNED'
+                WHERE work_order_id = ? AND deleted = 0
+                  AND status NOT IN ('COMPLETED', 'CANCELLED')
+                """, technicianId, workOrderId);
     }
 
     public int markStarted(Long workOrderId) {
-        return jdbc().update(
-                "UPDATE work_order SET status = 'IN_PROGRESS', started_at = NOW() WHERE work_order_id = ? AND deleted = 0",
-                workOrderId);
+        return jdbc().update("""
+                UPDATE work_order SET status = 'IN_PROGRESS', started_at = NOW()
+                WHERE work_order_id = ? AND deleted = 0 AND status = 'ASSIGNED'
+                """, workOrderId);
     }
 
     public int resumeRepair(Long workOrderId) {
-        return jdbc().update(
-                "UPDATE work_order SET status = 'IN_PROGRESS' WHERE work_order_id = ? AND deleted = 0",
-                workOrderId);
+        return jdbc().update("""
+                UPDATE work_order SET status = 'IN_PROGRESS'
+                WHERE work_order_id = ? AND deleted = 0 AND status = 'PART_WAITING'
+                """, workOrderId);
     }
 
     public int markPartWaiting(Long workOrderId) {
-        return jdbc().update(
-                "UPDATE work_order SET status = 'PART_WAITING' WHERE work_order_id = ? AND deleted = 0",
-                workOrderId);
+        return jdbc().update("""
+                UPDATE work_order SET status = 'PART_WAITING'
+                WHERE work_order_id = ? AND deleted = 0 AND status = 'IN_PROGRESS'
+                """, workOrderId);
     }
 
     public int complete(Long workOrderId, String repairResult) {

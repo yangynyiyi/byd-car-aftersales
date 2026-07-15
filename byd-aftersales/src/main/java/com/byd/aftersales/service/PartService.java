@@ -6,6 +6,7 @@ import com.byd.aftersales.domain.Part;
 import com.byd.aftersales.dto.PartCreateRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +29,13 @@ public class PartService {
         if (request.getStockQuantity() != null && request.getStockQuantity() < 0) {
             throw new BusinessException("初始库存不能为负数");
         }
-        if (request.getPurchasePrice() != null && request.getPurchasePrice().compareTo(java.math.BigDecimal.ZERO) < 0) {
+        if (request.getWarningThreshold() != null && request.getWarningThreshold() < 0) {
+            throw new BusinessException("预警阈值不能为负数");
+        }
+        if (request.getPurchasePrice() != null && request.getPurchasePrice().compareTo(BigDecimal.ZERO) < 0) {
             throw new BusinessException("采购价不能为负数");
         }
-        if (request.getSellingPrice() != null && request.getSellingPrice().compareTo(java.math.BigDecimal.ZERO) < 0) {
+        if (request.getSellingPrice() != null && request.getSellingPrice().compareTo(BigDecimal.ZERO) < 0) {
             throw new BusinessException("销售价不能为负数");
         }
         Part part = new Part();
@@ -41,8 +45,8 @@ public class PartService {
         part.setStockQuantity(request.getStockQuantity() != null ? request.getStockQuantity() : 0);
         part.setWarningThreshold(request.getWarningThreshold() != null ? request.getWarningThreshold() : 10);
         part.setUnit(request.getUnit() != null && !request.getUnit().isBlank() ? request.getUnit() : "个");
-        part.setPurchasePrice(request.getPurchasePrice() != null ? request.getPurchasePrice() : java.math.BigDecimal.ZERO);
-        part.setSellingPrice(request.getSellingPrice() != null ? request.getSellingPrice() : java.math.BigDecimal.ZERO);
+        part.setPurchasePrice(request.getPurchasePrice() != null ? request.getPurchasePrice() : BigDecimal.ZERO);
+        part.setSellingPrice(request.getSellingPrice() != null ? request.getSellingPrice() : BigDecimal.ZERO);
         part.setStatus("ENABLED");
         Long id = partDao.insert(part);
         return partDao.findById(id).orElseThrow(() -> new BusinessException("备件创建失败"));
@@ -58,12 +62,31 @@ public class PartService {
 
     public Part update(Long partId, PartCreateRequest request) {
         Part part = getById(partId);
-        part.setPartName(request.getPartName());
-        part.setCategory(request.getCategory());
-        part.setWarningThreshold(request.getWarningThreshold());
+        if (request.getPartName() != null && !request.getPartName().isBlank()) {
+            part.setPartName(request.getPartName());
+        }
+        if (request.getCategory() != null && !request.getCategory().isBlank()) {
+            part.setCategory(request.getCategory());
+        }
+        if (request.getWarningThreshold() != null) {
+            if (request.getWarningThreshold() < 0) {
+                throw new BusinessException("预警阈值不能为负数");
+            }
+            part.setWarningThreshold(request.getWarningThreshold());
+        }
         part.setUnit(request.getUnit() != null && !request.getUnit().isBlank() ? request.getUnit() : part.getUnit());
-        part.setPurchasePrice(request.getPurchasePrice() != null ? request.getPurchasePrice() : part.getPurchasePrice());
-        part.setSellingPrice(request.getSellingPrice() != null ? request.getSellingPrice() : part.getSellingPrice());
+        if (request.getPurchasePrice() != null) {
+            if (request.getPurchasePrice().compareTo(BigDecimal.ZERO) < 0) {
+                throw new BusinessException("采购价不能为负数");
+            }
+            part.setPurchasePrice(request.getPurchasePrice());
+        }
+        if (request.getSellingPrice() != null) {
+            if (request.getSellingPrice().compareTo(BigDecimal.ZERO) < 0) {
+                throw new BusinessException("销售价不能为负数");
+            }
+            part.setSellingPrice(request.getSellingPrice());
+        }
         partDao.update(part);
         return partDao.findById(partId).orElseThrow(() -> new BusinessException("备件不存在"));
     }

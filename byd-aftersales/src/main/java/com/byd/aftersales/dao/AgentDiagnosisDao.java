@@ -71,4 +71,14 @@ public class AgentDiagnosisDao extends BaseJdbcDao {
                 "SELECT * FROM agent_diagnosis WHERE fault_id = ? ORDER BY created_at DESC",
                 rowMapper, faultId);
     }
+
+    public List<AgentDiagnosis> findByVin(String vin) {
+        return jdbc().query(
+                """
+                SELECT d.* FROM agent_diagnosis d
+                JOIN fault_record f ON d.fault_id = f.fault_id
+                WHERE f.vin = ? ORDER BY d.created_at DESC
+                """,
+                rowMapper, vin);
+    }
 }

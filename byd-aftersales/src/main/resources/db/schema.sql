@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS part (
     category VARCHAR(50) NOT NULL,
     stock_quantity INT NOT NULL DEFAULT 0,
     warning_threshold INT NOT NULL DEFAULT 0,
-    unit VARCHAR(10) NOT NULL DEFAULT '个',
+    unit VARCHAR(10) NOT NULL DEFAULT 'unit',
     purchase_price DECIMAL(10,2) NOT NULL DEFAULT 0,
     selling_price DECIMAL(10,2) NOT NULL DEFAULT 0,
     status VARCHAR(20) NOT NULL DEFAULT 'ENABLED',

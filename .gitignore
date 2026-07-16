@@ -5,3 +5,8 @@ target/
 *.log
 dump.rdb
 *.docx
+byd-car-aftersale-fronted/
+images/
+report/
+*.vbs
+*.bat

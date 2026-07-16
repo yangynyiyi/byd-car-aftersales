@@ -20,11 +20,6 @@ public class GlobalExceptionHandler {
         return ApiResponse.fail(401, exception.getMessage());
     }
 
-    @ExceptionHandler(com.byd.car.common.exception.BusinessException.class)
-    public ApiResponse<Void> handleCarBusinessException(com.byd.car.common.exception.BusinessException exception) {
-        return ApiResponse.fail(exception.getCode(), exception.getMessage());
-    }
-
     @ExceptionHandler(DuplicateKeyException.class)
     public ApiResponse<Void> handleDuplicateKeyException(DuplicateKeyException exception) {
         return ApiResponse.fail(400, "数据重复，请检查用户名、手机号、VIN 或业务编号是否已存在");

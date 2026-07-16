@@ -99,6 +99,12 @@ public class WorkOrderDao extends BaseJdbcDao {
         return jdbc().query("SELECT * FROM work_order WHERE deleted = 0 ORDER BY created_at DESC", rowMapper);
     }
 
+    public List<WorkOrder> findByFaultId(Long faultId) {
+        return jdbc().query(
+                "SELECT * FROM work_order WHERE fault_id = ? AND deleted = 0 ORDER BY created_at DESC",
+                rowMapper, faultId);
+    }
+
     public boolean existsByFaultId(Long faultId) {
         Long count = jdbc().queryForObject(
                 "SELECT COUNT(*) FROM work_order WHERE fault_id = ? AND deleted = 0", Long.class, faultId);

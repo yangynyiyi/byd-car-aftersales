@@ -35,7 +35,7 @@ ai:
   agent:
     api-key: f1470c87b011434ab9bfcebf27cddd23.ev8t9Gh6BaJe6jYu
     base-url: https://open.bigmodel.cn/api/paas/v4
-    model: GLM-4.6V-Flash
+    model: GLM-4-Flash
     timeout: 30000
 
 logging:
